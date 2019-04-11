@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Антоненко
- * Date: 19.02.2019
- * Time: 21:57
- */
-
 
 class DataBaseManager
 {
