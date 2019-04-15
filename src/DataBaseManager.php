@@ -45,9 +45,25 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL) {
 
-        $this->request .= ' FROM ' . $table;
+        $this->request .= ' FROM ' . $table . ' ' . $alias;
 
         return $this;
+    }
+
+    public function where($requiredParams) {
+
+        $this->request .= ' WHERE ' . $requiredParams;
+
+        return $this;
+
+    }
+
+    public function order_by($columnName, $sortingDirection = NULL){
+
+        $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
+
+        return $this;
+
     }
 
     /**
