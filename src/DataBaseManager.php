@@ -49,8 +49,7 @@ class DataBaseManager
 
         $this->request .= ' FROM ' . $table;
 
-        if ($alias !== NULL)
-        {
+        if ($alias !== NULL) {
             $this->request .=  ' AS ' . $alias;
         }
 
