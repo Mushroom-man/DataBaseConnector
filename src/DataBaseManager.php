@@ -31,7 +31,8 @@ class DataBaseManager
      * @param $fields
      * @return $this
      */
-    public function select($fields) {
+    public function select($fields)
+    {
 
         $this->request .= 'SELECT ' . $fields;
 
@@ -43,14 +44,16 @@ class DataBaseManager
      * @param null $alias
      * @return $this
      */
-    public function from($table, $alias = NULL) {
+    public function from($table, $alias = NULL)
+    {
 
         $this->request .= ' FROM ' . $table;
 
-        if ($alias !== NULL) {
+        if ($alias !== NULL)
+        {
             $this->request .=  ' AS ' . $alias;
         }
-        
+
         return $this;
     }
 
@@ -58,7 +61,8 @@ class DataBaseManager
      * @param $conditions
      * @return $this
      */
-    public function where($conditions) {
+    public function where($conditions)
+    {
 
         $this->request .= ' WHERE ' . $conditions;
 
@@ -70,7 +74,8 @@ class DataBaseManager
      * @param string $sortingDirection
      * @return $this
      */
-    public function order_by($columnName, $sortingDirection = 'ASC'){
+    public function order_by($columnName, $sortingDirection = 'ASC')
+    {
 
         $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
 
@@ -80,7 +85,8 @@ class DataBaseManager
     /**
      * @return array
      */
-    public function getResult() {
+    public function getResult()
+    {
 
         $result = $this->connection->query($this->request);
 
