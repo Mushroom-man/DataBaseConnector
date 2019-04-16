@@ -45,19 +45,36 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL) {
 
-        $this->request .= ' FROM ' . $table . ' ' . $alias;
+        if ($alias !== NULL) {
+
+            $this->request .= ' FROM ' . $table . ' AS ' . $alias;
+
+        } else {
+
+            $this->request .= ' FROM ' . $table;
+
+        };
 
         return $this;
     }
 
-    public function where($requiredParams) {
+    /**
+     * @param $conditions
+     * @return $this
+     */
+    public function where($conditions) {
 
-        $this->request .= ' WHERE ' . $requiredParams;
+        $this->request .= ' WHERE ' . $conditions;
 
         return $this;
 
     }
 
+    /**
+     * @param $columnName
+     * @param null $sortingDirection
+     * @return $this
+     */
     public function order_by($columnName, $sortingDirection = NULL){
 
         $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
@@ -65,6 +82,8 @@ class DataBaseManager
         return $this;
 
     }
+
+
 
     /**
      * @return array
