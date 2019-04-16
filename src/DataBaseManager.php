@@ -45,15 +45,13 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL) {
 
-        if ($alias !== NULL) {
+        $this->request .= ' FROM ' . $table;
 
-            $this->request .= ' FROM ' . $table . ' AS ' . $alias;
+          if ($alias !== NULL) {
 
-        } else {
+            $this->request .=  ' AS ' . $alias;
 
-            $this->request .= ' FROM ' . $table;
-
-        };
+           };
 
         return $this;
     }
@@ -72,10 +70,10 @@ class DataBaseManager
 
     /**
      * @param $columnName
-     * @param null $sortingDirection
+     * @param string $sortingDirection
      * @return $this
      */
-    public function order_by($columnName, $sortingDirection = NULL){
+    public function order_by($columnName, $sortingDirection = 'ASC'){
 
         $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
 
