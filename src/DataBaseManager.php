@@ -47,12 +47,10 @@ class DataBaseManager
 
         $this->request .= ' FROM ' . $table;
 
-          if ($alias !== NULL) {
-
+        if ($alias !== NULL) {
             $this->request .=  ' AS ' . $alias;
-
-           };
-
+        }
+        
         return $this;
     }
 
@@ -65,7 +63,6 @@ class DataBaseManager
         $this->request .= ' WHERE ' . $conditions;
 
         return $this;
-
     }
 
     /**
@@ -78,19 +75,16 @@ class DataBaseManager
         $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
 
         return $this;
-
     }
-
-
 
     /**
      * @return array
      */
     public function getResult() {
 
-       $result = $this->connection->query($this->request);
+        $result = $this->connection->query($this->request);
 
-       return $result->fetchAll();
+        return $result->fetchAll();
     }
 
 }
