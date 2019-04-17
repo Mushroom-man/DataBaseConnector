@@ -33,7 +33,6 @@ class DataBaseManager
      */
     public function select($fields)
     {
-
         $this->request .= 'SELECT ' . $fields;
 
         return $this;
@@ -46,7 +45,6 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL)
     {
-
         $this->request .= ' FROM ' . $table;
 
         if ($alias) {
@@ -62,7 +60,6 @@ class DataBaseManager
      */
     public function where($conditions)
     {
-
         $this->request .= ' WHERE ' . $conditions;
 
         return $this;
@@ -75,7 +72,6 @@ class DataBaseManager
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
-
         $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
 
         return $this;
@@ -88,7 +84,6 @@ class DataBaseManager
      */
     public function insert($table, $column = NULL)
     {
-
         $this->request .= 'INSERT INTO ' . $table;
 
         if ($column) {
@@ -104,11 +99,9 @@ class DataBaseManager
      */
     public function values($newData)
     {
-
         $this->request .= ' VALUES ' . '(' . $newData . ')';
 
         return $this;
-
     }
 
     /**
@@ -116,11 +109,9 @@ class DataBaseManager
      */
     public function exec()
     {
-
         $result =  $this->connection->exec($this->request);
 
         return $result;
-
     }
 
     /**
@@ -129,7 +120,6 @@ class DataBaseManager
      */
     public function update($table)
     {
-
         $this->request .= 'UPDATE ' . $table;
 
         return $this;
@@ -141,21 +131,7 @@ class DataBaseManager
      */
     public function set($updatedColumn)
     {
-
         $this->request .= ' SET ' .  $updatedColumn;
-
-        return $this;
-    }
-
-    /**
-     * @param $conditions
-     * @param $orConditions
-     * @return $this
-     */
-    public function orWhere($conditions, $orConditions)
-    {
-
-        $this->request .= ' WHERE ' . $conditions . ' OR ' . $orConditions;
 
         return $this;
     }
@@ -167,7 +143,6 @@ class DataBaseManager
      */
     public function inWhere($conditions, $conditionsOptions)
     {
-
         $this->request .= ' WHERE ' . $conditions . ' IN ' . '(' . $conditionsOptions . ')';
 
         return $this;
@@ -178,10 +153,8 @@ class DataBaseManager
      */
     public function getResult()
     {
-
         $result = $this->connection->query($this->request);
 
         return $result->fetchAll();
     }
-
 }
