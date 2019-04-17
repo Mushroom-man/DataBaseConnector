@@ -33,7 +33,6 @@ class DataBaseManager
      */
     public function select($fields)
     {
-
         $this->request .= 'SELECT ' . $fields;
 
         return $this;
@@ -46,7 +45,6 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL)
     {
-
         $this->request .= ' FROM ' . $table;
 
         if ($alias) {
@@ -62,7 +60,6 @@ class DataBaseManager
      */
     public function where($conditions)
     {
-
         $this->request .= ' WHERE ' . $conditions;
 
         return $this;
@@ -75,8 +72,78 @@ class DataBaseManager
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
-
         $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
+
+        return $this;
+    }
+
+    /**
+     * @param $table
+     * @param null $column
+     * @return $this
+     */
+    public function insert($table, $column = NULL)
+    {
+        $this->request .= 'INSERT INTO ' . $table;
+
+        if ($column) {
+                $this->request .= ' ' . '(' . $column . ')';
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $newData
+     * @return $this
+     */
+    public function values($newData)
+    {
+        $this->request .= ' VALUES ' . '(' . $newData . ')';
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function exec()
+    {
+        $result =  $this->connection->exec($this->request);
+
+        return $result;
+    }
+
+    /**
+     * @param $table
+     * @return $this
+     */
+    public function update($table)
+    {
+        $this->request .= 'UPDATE ' . $table;
+
+        return $this;
+    }
+
+    /**
+     * @param $updatedColumn
+     * @return $this
+     */
+    public function set($updatedColumn)
+    {
+        $this->request .= ' SET ' .  $updatedColumn;
+
+        return $this;
+    }
+
+    /**
+     * @param $conditions
+     * @param $conditionsOptions
+     * @return $this
+     */
+    public function inWhere($conditions, $conditionsOptions)
+    {
+        $this->request .= ' WHERE ' . $conditions . ' IN ' . '(' . $conditionsOptions . ')';
 
         return $this;
     }
@@ -86,10 +153,8 @@ class DataBaseManager
      */
     public function getResult()
     {
-
         $result = $this->connection->query($this->request);
 
         return $result->fetchAll();
     }
-
 }
