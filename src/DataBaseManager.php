@@ -117,12 +117,61 @@ class DataBaseManager
     public function exec()
     {
 
-       $result =  $this->connection->exec($this->request);
+        $result =  $this->connection->exec($this->request);
 
         return $result;
 
     }
 
+    /**
+     * @param $table
+     * @return $this
+     */
+    public function update($table)
+    {
+
+        $this->request .= 'UPDATE ' . $table;
+
+        return $this;
+    }
+
+    /**
+     * @param $updatedColumn
+     * @return $this
+     */
+    public function set($updatedColumn)
+    {
+
+        $this->request .= ' SET ' .  $updatedColumn;
+
+        return $this;
+    }
+
+    /**
+     * @param $conditions
+     * @param $orConditions
+     * @return $this
+     */
+    public function orWhere($conditions, $orConditions)
+    {
+
+        $this->request .= ' WHERE ' . $conditions . ' OR ' . $orConditions;
+
+        return $this;
+    }
+
+    /**
+     * @param $conditions
+     * @param $conditionsOptions
+     * @return $this
+     */
+    public function inWhere($conditions, $conditionsOptions)
+    {
+
+        $this->request .= ' WHERE ' . $conditions . ' IN ' . '(' . $conditionsOptions . ')';
+
+        return $this;
+    }
 
     /**
      * @return array
