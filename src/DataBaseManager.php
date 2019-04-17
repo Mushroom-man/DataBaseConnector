@@ -8,6 +8,13 @@ class DataBaseManager
     /** @var string */
     private $request;
 
+    private $arrRequest = [
+        'from' => NULL,
+        'where' => NULL,
+        'andWhere' => NULL,
+        'orderBy' => NULL
+    ];
+
     /**
      * DataBase constructor.
      */
@@ -45,7 +52,7 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL)
     {
-        $this->request .= ' FROM ' . $table;
+        $this->arrRequest['from'] .= ' FROM ' . $table;
 
         if ($alias) {
             $this->request .=  ' AS ' . $alias;
@@ -60,7 +67,7 @@ class DataBaseManager
      */
     public function where($conditions)
     {
-        $this->request .= ' WHERE ' . $conditions;
+        $this->arrRequest['where'] .= ' WHERE ' . $conditions;
 
         return $this;
     }
@@ -72,7 +79,7 @@ class DataBaseManager
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
-        $this->request .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
+        $this->arrRequest['orderBy'] .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
 
         return $this;
     }
@@ -149,10 +156,25 @@ class DataBaseManager
     }
 
     /**
+     * @param $conditions
+     * @return $this
+     */
+    public function andWhere($conditions)
+    {
+        $this->arrRequest['andWhere'] .= ' AND ' . $conditions;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getResult()
     {
+        $arrToStr = implode(" ", $this->arrRequest);
+
+        $this->request .= $arrToStr;
+
         $result = $this->connection->query($this->request);
 
         return $result->fetchAll();
