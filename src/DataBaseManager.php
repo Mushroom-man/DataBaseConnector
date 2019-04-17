@@ -82,6 +82,49 @@ class DataBaseManager
     }
 
     /**
+     * @param $table
+     * @param null $column
+     * @return $this
+     */
+    public function insert($table, $column = NULL)
+    {
+
+        $this->request .= 'INSERT INTO ' . $table;
+
+        if ($column) {
+                $this->request .= ' ' . '(' . $column . ')';
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $newData
+     * @return $this
+     */
+    public function values($newData)
+    {
+
+        $this->request .= ' VALUES ' . '(' . $newData . ')';
+
+        return $this;
+
+    }
+
+    /**
+     * @return int
+     */
+    public function exec()
+    {
+
+       $result =  $this->connection->exec($this->request);
+
+        return $result;
+
+    }
+
+
+    /**
      * @return array
      */
     public function getResult()
