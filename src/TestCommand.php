@@ -8,10 +8,9 @@ $dataBaseManager = new DataBaseManager();
 //$data = $dataBaseManager->update('user')->set("name = 'wtf3'")->orWhere('id = 4', 'id = 3')->exec();
 //$data = $dataBaseManager->update('user')->set("name = 'shit'")->inWhere('id', '0, 1, 2' )->exec();
 
-$data = $dataBaseManager->select('u')->from('user', 'u')->order_by('u.id')->where('id>0')->andWhere('name = NOT NULL')->getResult();
+$data = $dataBaseManager->select('*')->andWhere('name = bla')->order_by('u.id', 'DESC')->where('name = firstuser')->from('user', 'u')->andWhere('name = NOT NULL')->getQuery();//->getResult();
 
 var_dump($data);
-
 
 
 
