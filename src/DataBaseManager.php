@@ -8,12 +8,11 @@ class DataBaseManager
     /** @var string */
     private $request;
 
-    private $arrRequest = [
-        'from' => NULL,
-        'where' => NULL,
-        'andWhere' => NULL,
-        'orderBy' => NULL
-    ];
+    private $from;
+
+    private $where;
+
+    private $orderBy;
 
     /**
      * DataBase constructor.
@@ -52,10 +51,11 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL)
     {
-        $this->arrRequest['from'] .= ' FROM ' . $table;
+        $this->from = [' FROM ', $table];
 
         if ($alias) {
-            $this->request .=  ' AS ' . $alias;
+            $this->from[] = ' AS ';
+            $this->from[] = $alias;;
         }
 
         return $this;
@@ -67,7 +67,7 @@ class DataBaseManager
      */
     public function where($conditions)
     {
-        $this->arrRequest['where'] .= ' WHERE ' . $conditions;
+           $this->andWhere($conditions);
 
         return $this;
     }
@@ -79,7 +79,7 @@ class DataBaseManager
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
-        $this->arrRequest['orderBy'] .= ' ORDER BY ' . $columnName . ' ' . $sortingDirection;
+        $this->orderBy = [' ORDER BY ', $columnName, ' ' . $sortingDirection];
 
         return $this;
     }
@@ -161,7 +161,19 @@ class DataBaseManager
      */
     public function andWhere($conditions)
     {
-        $this->arrRequest['andWhere'] .= ' AND ' . $conditions;
+        if($this->where == NULL) {
+        $this->where = [' WHERE ', $conditions];
+        } else {
+        $this->where[] = ' AND ';
+        $this->where[] = $conditions;
+        }
+
+        return $this;
+    }
+
+    public function getQuery()
+    {
+        $this->request .= implode($this->from) . implode($this->where) . implode($this->orderBy);
 
         return $this;
     }
@@ -171,10 +183,7 @@ class DataBaseManager
      */
     public function getResult()
     {
-        $arrToStr = implode(" ", $this->arrRequest);
-
-        $this->request .= $arrToStr;
-
+        $this->getQuery();
         $result = $this->connection->query($this->request);
 
         return $result->fetchAll();
