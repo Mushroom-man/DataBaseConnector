@@ -6,13 +6,23 @@ class DataBaseManager
     private $connection;
 
     /** @var string */
-    private $request;
-
+    private $fields;
+    /**
+     * @var
+     */
     private $from;
-
+    /**
+     * @var
+     */
     private $where;
-
+    /**
+     * @var
+     */
     private $orderBy;
+    /**
+     * @var
+     */
+    private $stmt;
 
     /**
      * DataBase constructor.
@@ -39,7 +49,7 @@ class DataBaseManager
      */
     public function select($fields)
     {
-        $this->request .= 'SELECT ' . $fields;
+        $this->fields .= $fields;
 
         return $this;
     }
@@ -51,7 +61,8 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL)
     {
-        $this->from = [' FROM ', $table];
+        $this->from[] = ' FROM ';
+        $this->from[] = $table;
 
         if ($alias) {
             $this->from[] = ' AS ';
@@ -79,7 +90,9 @@ class DataBaseManager
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
-        $this->orderBy = [' ORDER BY ', $columnName, ' ' . $sortingDirection];
+        $this->orderBy[] = ' ORDER BY ';
+        $this->orderBy[] = $columnName;
+        $this->orderBy[] = ' ' . $sortingDirection;
 
         return $this;
     }
@@ -161,21 +174,35 @@ class DataBaseManager
      */
     public function andWhere($conditions)
     {
-        if($this->where == NULL) {
-        $this->where = [' WHERE ', $conditions];
-        } else {
-        $this->where[] = ' AND ';
         $this->where[] = $conditions;
-        }
 
         return $this;
     }
 
-    public function getQuery()
+    /**
+     * @return $this
+     */
+    public function prepare()
     {
-        $this->request .= implode($this->from) . implode($this->where) . implode($this->orderBy);
+        $strStmt = 'SELECT ' . $this->fields . implode($this->from) . ' WHERE ' .  implode(' AND ', $this->where) . implode($this->orderBy);
+
+        var_dump($strStmt);
+
+        $this->stmt = $this->connection->prepare($strStmt);
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function execute()
+    {
+        $this->stmt->execute();
+
+        $result = $this->stmt->fetchAll();
+
+        return $result;
     }
 
     /**
