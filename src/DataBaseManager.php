@@ -61,12 +61,10 @@ class DataBaseManager
      */
     public function from($table, $alias = NULL)
     {
-        $this->from[] = ' FROM ';
-        $this->from[] = $table;
-
         if ($alias) {
-            $this->from[] = ' AS ';
-            $this->from[] = $alias;;
+            $this->from[] = $table . ' ' . $alias;
+        } else {
+            $this->from[] = $table;
         }
 
         return $this;
@@ -90,9 +88,7 @@ class DataBaseManager
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
-        $this->orderBy[] = ' ORDER BY ';
-        $this->orderBy[] = $columnName;
-        $this->orderBy[] = ' ' . $sortingDirection;
+        $this->orderBy[] = $columnName . ' ' . $sortingDirection;
 
         return $this;
     }
@@ -184,7 +180,7 @@ class DataBaseManager
      */
     public function prepare()
     {
-        $strStmt = 'SELECT ' . $this->fields . implode($this->from) . ' WHERE ' .  implode(' AND ', $this->where) . implode($this->orderBy);
+        $strStmt = 'SELECT ' . $this->fields . ' FROM ' . implode(', ', $this->from) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
 
         var_dump($strStmt);
 
