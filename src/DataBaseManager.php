@@ -245,19 +245,15 @@ class DataBaseManager
     public function getQuery()
     {
         switch ($this->requestType) {
-
             case self::SELECT_TYPE:
                  $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
                  break;
-
             case self::INSERT_TYPE:
                  $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
                  break;
-
             case self::UPDATE_TYPE:
                  $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields) . ' WHERE ' . implode(', ', $this->where);
                  break;
-
             case self::DELETE_TYPE:
                  $this->stmt = 'DELETE FROM ' . $this->table . ' WHERE ' . implode(' AND ', $this->where);
                  break;
