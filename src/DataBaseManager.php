@@ -38,12 +38,24 @@ class DataBaseManager
      */
     private $updatedFields;
 
+    /**
+     *
+     */
     const SELECT_TYPE = 0;
 
+    /**
+     *
+     */
     const INSERT_TYPE = 1;
 
+    /**
+     *
+     */
     const UPDATE_TYPE = 2;
 
+    /**
+     *
+     */
     const DELETE_TYPE = 3;
 
     /**
@@ -234,28 +246,20 @@ class DataBaseManager
     {
         switch ($this->requestType) {
 
-            case 0:
-
+            case self::SELECT_TYPE:
                  $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
-
                  break;
 
-            case 1:
-
+            case self::INSERT_TYPE:
                  $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
-
                  break;
 
-            case 2:
-
+            case self::UPDATE_TYPE:
                  $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields) . ' WHERE ' . implode(', ', $this->where);
-
                  break;
 
-            case 3:
-
+            case self::DELETE_TYPE:
                  $this->stmt = 'DELETE FROM ' . $this->table . ' WHERE ' . implode(' AND ', $this->where);
-
                  break;
         }
 
