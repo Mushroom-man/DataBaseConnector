@@ -7,22 +7,61 @@ class DataBaseManager
 
     /** @var string */
     private $fields;
+
     /**
      * @var
      */
-    private $from;
+    private $table;
+
     /**
      * @var
      */
     private $where;
+
     /**
      * @var
      */
     private $orderBy;
+
     /**
      * @var
      */
     private $stmt;
+
+    /**
+     * @var
+     */
+    private $insertValues;
+
+    /**
+     * @var
+     */
+    private $updatedFields;
+
+    /**
+     *
+     */
+    const SELECT_TYPE = 0;
+
+    /**
+     *
+     */
+    const INSERT_TYPE = 1;
+
+    /**
+     *
+     */
+    const UPDATE_TYPE = 2;
+
+    /**
+     *
+     */
+    const DELETE_TYPE = 3;
+
+    /**
+     * @var
+     */
+    private $requestType;
 
     /**
      * DataBase constructor.
@@ -45,11 +84,18 @@ class DataBaseManager
 
     /**
      * @param $fields
+     * @param null $alias
      * @return $this
      */
-    public function select($fields)
+    public function select($fields, $alias = NULL)
     {
-        $this->fields .= $fields;
+        $this->requestType = self::SELECT_TYPE;
+
+        if($alias) {
+            $this->fields[] = $fields . ' AS ' . $alias;
+        } else {
+            $this->fields[] = $fields;
+        }
 
         return $this;
     }
@@ -62,9 +108,9 @@ class DataBaseManager
     public function from($table, $alias = NULL)
     {
         if ($alias) {
-            $this->from[] = $table . ' ' . $alias;
+            $this->table[] = $table . ' ' . $alias;
         } else {
-            $this->from[] = $table;
+            $this->table[] = $table;
         }
 
         return $this;
@@ -95,15 +141,17 @@ class DataBaseManager
 
     /**
      * @param $table
-     * @param null $column
+     * @param null $fields
      * @return $this
      */
-    public function insert($table, $column = NULL)
+    public function insert($table, $fields = NULL)
     {
-        $this->request .= 'INSERT INTO ' . $table;
+        $this->requestType = self::INSERT_TYPE;
 
-        if ($column) {
-                $this->request .= ' ' . '(' . $column . ')';
+        $this->table .= $table;
+
+        if ($fields) {
+                $this->fields .= ' ' . '(' . $fields . ')';
         }
 
         return $this;
@@ -115,7 +163,7 @@ class DataBaseManager
      */
     public function values($newData)
     {
-        $this->request .= ' VALUES ' . '(' . $newData . ')';
+        $this->insertValues .= '(' . $newData . ')';
 
         return $this;
     }
@@ -125,7 +173,7 @@ class DataBaseManager
      */
     public function exec()
     {
-        $result =  $this->connection->exec($this->request);
+        $result =  $this->connection->exec($this->stmt);
 
         return $result;
     }
@@ -136,18 +184,20 @@ class DataBaseManager
      */
     public function update($table)
     {
-        $this->request .= 'UPDATE ' . $table;
+        $this->requestType = self::UPDATE_TYPE;
+
+        $this->table .= $table;
 
         return $this;
     }
 
     /**
-     * @param $updatedColumn
+     * @param $newConditions
      * @return $this
      */
-    public function set($updatedColumn)
+    public function set($newConditions)
     {
-        $this->request .= ' SET ' .  $updatedColumn;
+        $this->updatedFields[] = $newConditions;
 
         return $this;
     }
@@ -157,6 +207,20 @@ class DataBaseManager
      * @param $conditionsOptions
      * @return $this
      */
+
+    /**
+     * @param $table
+     * @return $this
+     */
+    public function delete($table)
+    {
+        $this->requestType = self::DELETE_TYPE;
+
+        $this->table .= $table;
+
+        return $this;
+    }
+
     public function inWhere($conditions, $conditionsOptions)
     {
         $this->request .= ' WHERE ' . $conditions . ' IN ' . '(' . $conditionsOptions . ')';
@@ -178,13 +242,32 @@ class DataBaseManager
     /**
      * @return $this
      */
+    public function getQuery()
+    {
+        switch ($this->requestType) {
+            case self::SELECT_TYPE:
+                 $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
+                 break;
+            case self::INSERT_TYPE:
+                 $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
+                 break;
+            case self::UPDATE_TYPE:
+                 $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields) . ' WHERE ' . implode(', ', $this->where);
+                 break;
+            case self::DELETE_TYPE:
+                 $this->stmt = 'DELETE FROM ' . $this->table . ' WHERE ' . implode(' AND ', $this->where);
+                 break;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     public function prepare()
     {
-        $strStmt = 'SELECT ' . $this->fields . ' FROM ' . implode(', ', $this->from) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
-
-        var_dump($strStmt);
-
-        $this->stmt = $this->connection->prepare($strStmt);
+        $this->stmt = $this->connection->prepare($this->stmt);
 
         return $this;
     }
