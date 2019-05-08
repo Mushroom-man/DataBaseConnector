@@ -246,17 +246,59 @@ class DataBaseManager
     {
         switch ($this->requestType) {
             case self::SELECT_TYPE:
-                 $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
+                 $this->getSelect();
                  break;
             case self::INSERT_TYPE:
-                 $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
+                 $this->getInsert();
                  break;
             case self::UPDATE_TYPE:
-                 $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields) . ' WHERE ' . implode(', ', $this->where);
+                 $this->getUpdate();
                  break;
             case self::DELETE_TYPE:
-                 $this->stmt = 'DELETE FROM ' . $this->table . ' WHERE ' . implode(' AND ', $this->where);
+                 $this->getDelete();
                  break;
+        }
+
+        return $this;
+    }
+
+    public function getSelect()
+    {
+        $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table);
+
+        if($this->where) {
+            $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+        if($this->orderBy){
+            $this->stmt .= ' ORDER BY ' . implode(', ', $this->orderBy);
+        }
+
+        return $this;
+    }
+
+    public function getInsert()
+    {
+        $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
+
+        return $this;
+    }
+
+    public function getUpdate()
+    {
+        $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields);
+
+        if($this->where) {
+            $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+
+        return $this;
+    }
+
+    public function getDelete()
+    {
+        $this->stmt = 'DELETE FROM ' . $this->table;
+        if($this->where) {
+            $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
         }
 
         return $this;
