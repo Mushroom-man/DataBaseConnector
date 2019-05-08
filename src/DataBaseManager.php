@@ -38,10 +38,18 @@ class DataBaseManager
      */
     private $updatedFields;
 
+    const SELECT_TYPE = 0;
+
+    const INSERT_TYPE = 1;
+
+    const UPDATE_TYPE = 2;
+
+    const DELETE_TYPE = 3;
+
     /**
      * @var
      */
-    private $checkQuery;
+    private $requestType;
 
     /**
      * DataBase constructor.
@@ -69,7 +77,7 @@ class DataBaseManager
      */
     public function select($fields, $alias = NULL)
     {
-        $this->checkQuery = 0;
+        $this->requestType = self::SELECT_TYPE;
 
         if($alias) {
             $this->fields[] = $fields . ' AS ' . $alias;
@@ -126,7 +134,7 @@ class DataBaseManager
      */
     public function insert($table, $fields = NULL)
     {
-        $this->checkQuery = 1;
+        $this->requestType = self::INSERT_TYPE;
 
         $this->table .= $table;
 
@@ -164,7 +172,7 @@ class DataBaseManager
      */
     public function update($table)
     {
-        $this->checkQuery = 2;
+        $this->requestType = self::UPDATE_TYPE;
 
         $this->table .= $table;
 
@@ -194,7 +202,7 @@ class DataBaseManager
      */
     public function delete($table)
     {
-        $this->checkQuery = 3;
+        $this->requestType = self::DELETE_TYPE;
 
         $this->table .= $table;
 
@@ -224,7 +232,7 @@ class DataBaseManager
      */
     public function getQuery()
     {
-        switch ($this->checkQuery) {
+        switch ($this->requestType) {
 
             case 0:
 
