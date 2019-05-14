@@ -250,23 +250,26 @@ class DataBaseManager
     {
         switch ($this->requestType) {
             case self::SELECT_TYPE:
-                 $this->getSelect();
+                 $this->generateSelectQuery();
                  break;
             case self::INSERT_TYPE:
-                 $this->getInsert();
+                 $this->generateInsertQuery();
                  break;
             case self::UPDATE_TYPE:
-                 $this->getUpdate();
+                 $this->generateUpdateQuery();
                  break;
             case self::DELETE_TYPE:
-                 $this->getDelete();
+                 $this->generateDeleteQuery();
                  break;
         }
 
         return $this;
     }
 
-    public function getSelect()
+    /**
+     * @return $this
+     */
+    public function generateSelectQuery()
     {
         $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table);
 
@@ -280,14 +283,20 @@ class DataBaseManager
         return $this;
     }
 
-    public function getInsert()
+    /**
+     * @return $this
+     */
+    public function generateInsertQuery()
     {
         $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
 
         return $this;
     }
 
-    public function getUpdate()
+    /**
+     * @return $this
+     */
+    public function generateUpdateQuery()
     {
         $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields);
 
@@ -298,7 +307,10 @@ class DataBaseManager
         return $this;
     }
 
-    public function getDelete()
+    /**
+     * @return $this
+     */
+    public function generateDeleteQuery()
     {
         $this->stmt = 'DELETE FROM ' . $this->table;
         if($this->where) {
