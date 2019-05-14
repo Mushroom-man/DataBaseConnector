@@ -10,17 +10,20 @@ class ConfigParser
     /**
      *
      */
-    public static function parsingData()
+    public static function parseData()
     {
-        $parsedConfig = file('/var/www/html/DataBaseConnector/src/configDB', FILE_IGNORE_NEW_LINES);
+        $parsConfig = file('/var/www/html/DataBaseConnector/src/configDB', FILE_IGNORE_NEW_LINES);
 
-        foreach ($parsedConfig as $key => $value) {
-            $parsedElement = explode(' ', $value);
+        foreach ($parsConfig as $key => $value) {
+            $parsElement = explode(': ', $value);
 
-            self::$parsedData[$parsedElement[0]] = $parsedElement[1];
+            self::$parsedData[$parsElement[0]] = $parsElement[1];
         }
 
         return;
     }
 }
+
+//ConfigParser::parseData();
+//var_dump(ConfigParser::$parsedData);
 
