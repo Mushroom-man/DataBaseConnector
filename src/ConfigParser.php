@@ -3,12 +3,12 @@
 class ConfigParser
 {
     /**
-     * @var
+     * @var array
      */
     public static $parsedData;
 
     /**
-     *
+     * @return mixed
      */
     public static function parseData()
     {
@@ -20,10 +20,7 @@ class ConfigParser
             self::$parsedData[$parsElement[0]] = $parsElement[1];
         }
 
-        return;
+        return ConfigParser::$parsedData;
     }
 }
-
-//ConfigParser::parseData();
-//var_dump(ConfigParser::$parsedData);
 
