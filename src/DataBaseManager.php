@@ -37,6 +37,16 @@ class DataBaseManager
     /**
      * @var
      */
+    private $joinTable;
+
+    /**
+     * @var 
+     */
+    private $compareField;
+
+    /**
+     * @var
+     */
     private $updatedFields;
 
     /**
@@ -279,6 +289,9 @@ class DataBaseManager
         if($this->orderBy){
             $this->stmt .= ' ORDER BY ' . implode(', ', $this->orderBy);
         }
+        if($this->joinTable){
+            $this->stmt .= ' INNER JOIN ' . $this->joinTable . ' ON ' . $this->compareField;
+        }
 
         return $this;
     }
@@ -316,6 +329,20 @@ class DataBaseManager
         if($this->where) {
             $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
         }
+
+        return $this;
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @return $this
+     */
+    public function innerJoin($table,$field)
+    {
+        $this->joinTable = $table;
+
+        $this->compareField = $field;
 
         return $this;
     }
