@@ -70,11 +70,11 @@ class DataBaseManager
     public function __construct()
     {
         $className = 'ConfigParser';
-        $className::parsingData();
-        $dsn = "mysql:host=" . ConfigParser::$parsedData["db_host:"] . ";dbname=" . ConfigParser::$parsedData["db_name:"] . ";charset=" . ConfigParser::$parsedData["charset:"];
+        $className::parseData();
+        $dsn = "mysql:host=" . ConfigParser::$parsedData["db_host"] . ";dbname=" . ConfigParser::$parsedData["db_name"] . ";charset=" . ConfigParser::$parsedData["charset"];
         //$dsn = "mysql:host=127.0.0.1;dbname=MyTest;charset=utf8";
-        $user = ConfigParser::$parsedData["db_user:"];
-        $pass = ConfigParser::$parsedData["db_password:"];
+        $user = ConfigParser::$parsedData["db_user"];
+        $pass = ConfigParser::$parsedData["db_password"];
         $this->connection = new PDO($dsn, $user, $pass);
     }
 
