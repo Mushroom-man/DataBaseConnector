@@ -1,4 +1,5 @@
 <?php
+require_once 'ConfigParser.php';
 
 class DataBaseManager
 {
@@ -64,13 +65,16 @@ class DataBaseManager
     private $requestType;
 
     /**
-     * DataBase constructor.
+     * DataBaseManager constructor.
      */
     public function __construct()
     {
-        $dsn = "mysql:host=127.0.0.1;dbname=MyTest;charset=utf8";
-        $user = 'root';
-        $pass = 'LizardKing7';
+        $className = 'ConfigParser';
+        $className::parseData();
+        $dsn = "mysql:host=" . ConfigParser::$parsedData["db_host"] . ";dbname=" . ConfigParser::$parsedData["db_name"] . ";charset=" . ConfigParser::$parsedData["charset"];
+        //$dsn = "mysql:host=127.0.0.1;dbname=MyTest;charset=utf8";
+        $user = ConfigParser::$parsedData["db_user"];
+        $pass = ConfigParser::$parsedData["db_password"];
         $this->connection = new PDO($dsn, $user, $pass);
     }
 
@@ -246,17 +250,71 @@ class DataBaseManager
     {
         switch ($this->requestType) {
             case self::SELECT_TYPE:
-                 $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table) . ' WHERE ' .  implode(' AND ', $this->where) . ' ORDER BY ' . implode(', ', $this->orderBy);
+                 $this->generateSelectQuery();
                  break;
             case self::INSERT_TYPE:
-                 $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
+                 $this->generateInsertQuery();
                  break;
             case self::UPDATE_TYPE:
-                 $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields) . ' WHERE ' . implode(', ', $this->where);
+                 $this->generateUpdateQuery();
                  break;
             case self::DELETE_TYPE:
-                 $this->stmt = 'DELETE FROM ' . $this->table . ' WHERE ' . implode(' AND ', $this->where);
+                 $this->generateDeleteQuery();
                  break;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function generateSelectQuery()
+    {
+        $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table);
+
+        if($this->where) {
+            $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+        if($this->orderBy){
+            $this->stmt .= ' ORDER BY ' . implode(', ', $this->orderBy);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function generateInsertQuery()
+    {
+        $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function generateUpdateQuery()
+    {
+        $this->stmt = 'UPDATE ' . $this->table . ' SET ' . implode(', ', $this->updatedFields);
+
+        if($this->where) {
+            $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function generateDeleteQuery()
+    {
+        $this->stmt = 'DELETE FROM ' . $this->table;
+        if($this->where) {
+            $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
         }
 
         return $this;
