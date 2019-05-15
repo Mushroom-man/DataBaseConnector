@@ -40,7 +40,7 @@ class DataBaseManager
     private $joinTable;
 
     /**
-     * @var 
+     * @var
      */
     private $compareField;
 
@@ -283,14 +283,14 @@ class DataBaseManager
     {
         $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table);
 
+        if($this->joinTable){
+            $this->stmt .= ' INNER JOIN ' . $this->joinTable . ' ON ' . $this->compareField;
+        }
         if($this->where) {
             $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
         }
         if($this->orderBy){
             $this->stmt .= ' ORDER BY ' . implode(', ', $this->orderBy);
-        }
-        if($this->joinTable){
-            $this->stmt .= ' INNER JOIN ' . $this->joinTable . ' ON ' . $this->compareField;
         }
 
         return $this;
@@ -335,12 +335,17 @@ class DataBaseManager
 
     /**
      * @param $table
+     * @param null $alias
      * @param $field
      * @return $this
      */
-    public function innerJoin($table,$field)
+    public function innerJoin($table,$alias = NULL, $field)
     {
-        $this->joinTable = $table;
+        if ($alias) {
+            $this->joinTable = $table . ' ' . $alias;
+        } else {
+            $this->joinTable = $table;
+        }
 
         $this->compareField = $field;
 
