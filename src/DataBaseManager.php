@@ -9,59 +9,39 @@ class DataBaseManager
     /** @var string */
     private $fields;
 
-    /**
-     * @var
-     */
+    /** @var array */
     private $table;
 
-    /**
-     * @var
-     */
+    /** @var array */
     private $where;
 
-    /**
-     * @var
-     */
+    /** @var array */
     private $orderBy;
 
-    /**
-     * @var
-     */
+    /** @var string */
     private $stmt;
 
-    /**
-     * @var
-     */
+    /** @var string */
     private $insertValues;
 
-    /**
-     * @var
-     */
+    /** @var string */
+    private $joinTable;
+
+    /** @var string */
+    private $compareField;
+
+    /** @var array */
     private $updatedFields;
 
-    /**
-     *
-     */
     const SELECT_TYPE = 0;
 
-    /**
-     *
-     */
     const INSERT_TYPE = 1;
 
-    /**
-     *
-     */
     const UPDATE_TYPE = 2;
 
-    /**
-     *
-     */
     const DELETE_TYPE = 3;
 
-    /**
-     * @var
-     */
+    /** @var integer */
     private $requestType;
 
     /**
@@ -72,24 +52,20 @@ class DataBaseManager
         $className = 'ConfigParser';
         $className::parseData();
         $dsn = "mysql:host=" . ConfigParser::$parsedData["db_host"] . ";dbname=" . ConfigParser::$parsedData["db_name"] . ";charset=" . ConfigParser::$parsedData["charset"];
-        //$dsn = "mysql:host=127.0.0.1;dbname=MyTest;charset=utf8";
         $user = ConfigParser::$parsedData["db_user"];
         $pass = ConfigParser::$parsedData["db_password"];
         $this->connection = new PDO($dsn, $user, $pass);
     }
 
-    /**
-     *
-     */
     public function getConnection()
     {
         $this->connection;
     }
 
     /**
-     * @param $fields
+     * @param string $fields
      * @param null $alias
-     * @return $this
+     * @return object $this
      */
     public function select($fields, $alias = NULL)
     {
@@ -105,9 +81,9 @@ class DataBaseManager
     }
 
     /**
-     * @param $table
+     * @param string $table
      * @param null $alias
-     * @return $this
+     * @return object $this
      */
     public function from($table, $alias = NULL)
     {
@@ -121,8 +97,8 @@ class DataBaseManager
     }
 
     /**
-     * @param $conditions
-     * @return $this
+     * @param string $conditions
+     * @return object $this
      */
     public function where($conditions)
     {
@@ -132,9 +108,9 @@ class DataBaseManager
     }
 
     /**
-     * @param $columnName
+     * @param string $columnName
      * @param string $sortingDirection
-     * @return $this
+     * @return object $this
      */
     public function order_by($columnName, $sortingDirection = 'ASC')
     {
@@ -144,9 +120,9 @@ class DataBaseManager
     }
 
     /**
-     * @param $table
+     * @param string $table
      * @param null $fields
-     * @return $this
+     * @return object $this
      */
     public function insert($table, $fields = NULL)
     {
@@ -162,8 +138,8 @@ class DataBaseManager
     }
 
     /**
-     * @param $newData
-     * @return $this
+     * @param string $newData
+     * @return object $this
      */
     public function values($newData)
     {
@@ -173,18 +149,8 @@ class DataBaseManager
     }
 
     /**
-     * @return int
-     */
-    public function exec()
-    {
-        $result =  $this->connection->exec($this->stmt);
-
-        return $result;
-    }
-
-    /**
-     * @param $table
-     * @return $this
+     * @param string $table
+     * @return object $this
      */
     public function update($table)
     {
@@ -196,8 +162,8 @@ class DataBaseManager
     }
 
     /**
-     * @param $newConditions
-     * @return $this
+     * @param string $newConditions
+     * @return object $this
      */
     public function set($newConditions)
     {
@@ -207,14 +173,8 @@ class DataBaseManager
     }
 
     /**
-     * @param $conditions
-     * @param $conditionsOptions
-     * @return $this
-     */
-
-    /**
-     * @param $table
-     * @return $this
+     * @param string $table
+     * @return object $this
      */
     public function delete($table)
     {
@@ -225,16 +185,9 @@ class DataBaseManager
         return $this;
     }
 
-    public function inWhere($conditions, $conditionsOptions)
-    {
-        $this->request .= ' WHERE ' . $conditions . ' IN ' . '(' . $conditionsOptions . ')';
-
-        return $this;
-    }
-
     /**
-     * @param $conditions
-     * @return $this
+     * @param string $conditions
+     * @return object $this
      */
     public function andWhere($conditions)
     {
@@ -244,7 +197,7 @@ class DataBaseManager
     }
 
     /**
-     * @return $this
+     * @return object $this
      */
     public function getQuery()
     {
@@ -267,12 +220,15 @@ class DataBaseManager
     }
 
     /**
-     * @return $this
+     * @return object $this
      */
     public function generateSelectQuery()
     {
         $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table);
 
+        if($this->joinTable){
+            $this->stmt .= ' INNER JOIN ' . $this->joinTable . ' ON ' . $this->compareField;
+        }
         if($this->where) {
             $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
         }
@@ -284,7 +240,7 @@ class DataBaseManager
     }
 
     /**
-     * @return $this
+     * @return object $this
      */
     public function generateInsertQuery()
     {
@@ -294,7 +250,7 @@ class DataBaseManager
     }
 
     /**
-     * @return $this
+     * @return object $this
      */
     public function generateUpdateQuery()
     {
@@ -308,7 +264,7 @@ class DataBaseManager
     }
 
     /**
-     * @return $this
+     * @return object $this
      */
     public function generateDeleteQuery()
     {
@@ -321,7 +277,26 @@ class DataBaseManager
     }
 
     /**
-     * @return $this
+     * @param string $table
+     * @param string $field
+     * @param null $alias
+     * @return object $this
+     */
+    public function innerJoin($table, $field, $alias = NULL)
+    {
+        if ($alias) {
+            $this->joinTable = $table . ' ' . $alias;
+        } else {
+            $this->joinTable = $table;
+        }
+
+        $this->compareField = $field;
+
+        return $this;
+    }
+
+    /**
+     * @return object $this
      */
     public function prepare()
     {
@@ -340,16 +315,5 @@ class DataBaseManager
         $result = $this->stmt->fetchAll();
 
         return $result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getResult()
-    {
-        $this->getQuery();
-        $result = $this->connection->query($this->request);
-
-        return $result->fetchAll();
     }
 }
