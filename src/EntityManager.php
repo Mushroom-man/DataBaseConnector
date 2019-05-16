@@ -7,25 +7,25 @@ class EntityManager
 {
     private $dbConnect;
 
-    private $userEntity;
+    private $oneEntity;
 
-    public function __construct()
+    public function __construct($className)
     {
       $this->dbConnect = new DataBaseManager();
 
-      $this->userEntity = new User();
+      $this->oneEntity = new $className;
     }
 
     public function setEntityName($entityName)
     {
-      $this->userEntity->entityName = $entityName;
+      $this->oneEntity->entityName = $entityName;
 
       return $this;
     }
 
     public function findById($desiredId)
     {
-        $queryResult = $this->dbConnect->select('*')->from($this->userEntity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        $queryResult = $this->dbConnect->select('*')->from($this->oneEntity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
         $this->setProperties($queryResult);
 
@@ -34,9 +34,9 @@ class EntityManager
 
     public function setProperties($queryResult)
     {
-        $this->userEntity->id = $queryResult[0]["id"];
+        $this->oneEntity->id = $queryResult[0]["id"];
 
-        $this->userEntity->name = $queryResult[0]["name"];
+        $this->oneEntity->name = $queryResult[0]["name"];
 
         return $this;
     }
