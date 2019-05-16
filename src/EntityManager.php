@@ -5,31 +5,27 @@ require_once 'User.php';
 
 class EntityManager
 {
-    private $entityName;
-
-    private $id;
-
-    private $name;
-
     private $dbConnect;
+
+    private $userEntity;
 
     public function __construct()
     {
       $this->dbConnect = new DataBaseManager();
+
+      $this->userEntity = new User();
     }
 
     public function setEntityName($entityName)
     {
-      $this->entityName = $entityName;
+      $this->userEntity->entityName = $entityName;
 
       return $this;
     }
 
     public function findById($desiredId)
     {
-        $userEntity = User::class;
-
-        $queryResult = $this->dbConnect->select('*')->from($userEntity::$table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        $queryResult = $this->dbConnect->select('*')->from($this->userEntity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
         $this->setProperties($queryResult);
 
@@ -38,9 +34,9 @@ class EntityManager
 
     public function setProperties($queryResult)
     {
-        $this->id = $queryResult[0]["id"];
+        $this->userEntity->id = $queryResult[0]["id"];
 
-        $this->name = $queryResult[0]["name"];
+        $this->userEntity->name = $queryResult[0]["name"];
 
         return $this;
     }
