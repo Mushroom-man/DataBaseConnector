@@ -1,13 +1,22 @@
 <?php
 require_once 'DataBaseManager.php';
 
+require_once 'User.php';
+
 class EntityManager
 {
     private $entityName;
 
-    private $userId;
+    private $id;
 
-    private $userName;
+    private $name;
+
+    private $dbConnect;
+
+    public function __construct()
+    {
+      $this->dbConnect = new DataBaseManager();
+    }
 
     public function setEntityName($entityName)
     {
@@ -18,9 +27,9 @@ class EntityManager
 
     public function findById($desiredId)
     {
-        $dataBaseManager = new DataBaseManager();
+        $userEntity = User::class;
 
-        $queryResult = $dataBaseManager->select('*')->from('user')->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        $queryResult = $this->dbConnect->select('*')->from($userEntity::$table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
         $this->setProperties($queryResult);
 
@@ -29,9 +38,9 @@ class EntityManager
 
     public function setProperties($queryResult)
     {
-        $this->userId = $queryResult[0]["id"];
+        $this->id = $queryResult[0]["id"];
 
-        $this->userName = $queryResult[0]["name"];
+        $this->name = $queryResult[0]["name"];
 
         return $this;
     }
