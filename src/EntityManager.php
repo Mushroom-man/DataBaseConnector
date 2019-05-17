@@ -26,19 +26,8 @@ class EntityManager
     }
 
     /**
-     * @param string $entityName
-     * @return object $this
-     */
-    public function setEntityName($entityName)
-    {
-        $this->entity->entityName = $entityName;
-
-        return $this;
-    }
-
-    /**
-     * @param integer $desiredId
-     * @return object $this|null
+     * @param $desiredId
+     * @return object|null
      */
     public function findById($desiredId)
     {
@@ -53,12 +42,12 @@ class EntityManager
                 $this->setProperties($queryResult);
             }
 
-        return $this;
+        return $this->entity;
     }
 
     /**
-     * @param array $queryResult
-     * @return object $this
+     * @param $queryResult
+     * @return object
      */
     private function setProperties($queryResult)
     {
@@ -71,8 +60,7 @@ class EntityManager
                 $this->entity->$key = $value;
             }
         }
-        $this->dbConnect = new DataBaseManager();
 
-        return $this;
+        return $this->entity;
     }
 }
