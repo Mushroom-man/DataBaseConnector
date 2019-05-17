@@ -5,38 +5,55 @@ require_once 'User.php';
 
 class EntityManager
 {
+    /** @var object DataBaseManager */
     private $dbConnect;
 
-    private $entityObj;
+    /** @var object */
+    private $entity;
 
+    /** @var integer */
     private $desiredId;
 
+    /**
+     * EntityManager constructor.
+     * @param string $className
+     */
     public function __construct($className)
     {
       $this->dbConnect = new DataBaseManager();
 
-      $this->entityObj = new $className;
+      $this->entity = new $className;
     }
 
+    /**
+     * @param string $entityName
+     * @return object $this
+     */
     public function setEntityName($entityName)
     {
-      $this->entityObj->entityName = $entityName;
+      $this->entity->entityName = $entityName;
 
       return $this;
     }
 
+    /**
+     * @param integer $desiredId
+     * @return object $this|null
+     */
     public function findById($desiredId)
     {
         try {
-            throw new Exception("Does not exist in the database");
+            throw new Exception("Does not exist in the database! ");
         } catch(Exception $e) {
 
             $this->desiredId = $desiredId;
 
-            $queryResult = $this->dbConnect->select('*')->from($this->entityObj->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+            $queryResult = $this->dbConnect->select('*')->from($this->entity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
-            if ($queryResult == []) {
+            if (!$queryResult) {
                 echo $e->getMessage();
+
+                return NULL;
             } else {
                 $this->setProperties($queryResult);
             }
@@ -45,15 +62,19 @@ class EntityManager
         return $this;
     }
 
+    /**
+     * @param array $queryResult
+     * @return object $this
+     */
     private function setProperties($queryResult)
     {
-        $arrObjVars = get_object_vars($this->entityObj);
+        $arrObjVars = get_object_vars($this->entity);
 
         $arrExistingProperties= array_intersect_key($queryResult[0], $arrObjVars);
 
         foreach ($arrExistingProperties as $key => $value) {
             if ($value !== NULL) {
-                $this->entityObj->$key = $value;
+                $this->entity->$key = $value;
             }
         }
         $this->dbConnect = new DataBaseManager();
