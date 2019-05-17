@@ -42,21 +42,15 @@ class EntityManager
      */
     public function findById($desiredId)
     {
-        try {
-            throw new Exception("Does not exist in the database! ");
-        } catch(Exception $e) {
-
             $this->desiredId = $desiredId;
 
             $queryResult = $this->dbConnect->select('*')->from($this->entity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
             if (!$queryResult) {
-                echo $e->getMessage();
 
                 return NULL;
             } else {
                 $this->setProperties($queryResult);
-            }
         }
 
         return $this;
