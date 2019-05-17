@@ -36,13 +36,10 @@ class EntityManager
         $queryResult = $this->dbConnect->select('*')->from($this->entity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
             if (!$queryResult) {
-
                 return NULL;
             } else {
-                $this->setProperties($queryResult);
+                return $this->setProperties($queryResult);
             }
-
-        return $this->entity;
     }
 
     /**
