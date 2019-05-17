@@ -7,7 +7,7 @@ class BaseEntity
     private $id;
 
     /** @var string */
-    private $name;
+    protected $table;
 
     /**
      * @return integer
@@ -28,16 +28,8 @@ class BaseEntity
     /**
      * @return string
      */
-    public function getName()
+    public function getTable()
     {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+        return $this->table;
     }
 }

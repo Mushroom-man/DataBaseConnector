@@ -4,21 +4,29 @@ require_once 'BaseEntity.php';
 class Role extends BaseEntity
 {
     /** @var string */
-    private $table = 'role';
+    private $name;
+
+    /**
+     * Role constructor.
+     */
+    public function __construct()
+    {
+        $this->table = 'role';
+    }
 
     /**
      * @return string
      */
-    public function getTable()
+    public function getName()
     {
-        return $this->table;
+        return $this->name;
     }
 
     /**
-     * @param string $table
+     * @param string $name
      */
-    public function setTable($table)
+    public function setName($name)
     {
-        $this->table = $table;
+        $this->name = $name;
     }
 }

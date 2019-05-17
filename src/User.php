@@ -4,21 +4,29 @@ require_once 'BaseEntity.php';
 class User extends BaseEntity
 {
     /** @var string */
-    private $table = 'user';
+    private $name;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->table = 'user';
+    }
 
     /**
      * @return string
      */
-    public function getTable()
+    public function getName()
     {
-        return $this->table;
+        return $this->name;
     }
 
     /**
-     * @param string $table
+     * @param string $name
      */
-    public function setTable($table)
+    public function setName($name)
     {
-        $this->table = $table;
+        $this->name = $name;
     }
 }
