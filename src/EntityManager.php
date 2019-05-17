@@ -3,6 +3,9 @@ require_once 'DataBaseManager.php';
 
 require_once 'User.php';
 
+/**
+ * Class EntityManager
+ */
 class EntityManager
 {
     /** @var object DataBaseManager */
@@ -10,9 +13,6 @@ class EntityManager
 
     /** @var object */
     private $entity;
-
-    /** @var integer */
-    private $desiredId;
 
     /**
      * EntityManager constructor.
@@ -26,14 +26,14 @@ class EntityManager
     }
 
     /**
-     * @param $desiredId
+     * @param integer $desiredId
      * @return object|null
      */
     public function findById($desiredId)
     {
-        $this->desiredId = $desiredId;
+        $this->entity->setId($desiredId);
 
-        $queryResult = $this->dbConnect->select('*')->from($this->entity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        $queryResult = $this->dbConnect->select('*')->from($this->entity->getTable())->where('id = ' . $this->entity->getId())->getQuery()->prepare()->execute();
 
         if (!$queryResult) {
             return NULL;
