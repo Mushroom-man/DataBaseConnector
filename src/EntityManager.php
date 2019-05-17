@@ -3,9 +3,6 @@ require_once 'DataBaseManager.php';
 
 require_once 'User.php';
 
-/**
- * Class EntityManager
- */
 class EntityManager
 {
     /** @var object DataBaseManager */
@@ -26,14 +23,12 @@ class EntityManager
     }
 
     /**
-     * @param integer $desiredId
+     * @param $desiredId
      * @return object|null
      */
     public function findById($desiredId)
     {
-        $this->entity->setId($desiredId);
-
-        $queryResult = $this->dbConnect->select('*')->from($this->entity->getTable())->where('id = ' . $this->entity->getId())->getQuery()->prepare()->execute();
+        $queryResult = $this->dbConnect->select('*')->from($this->entity->getTable())->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
         if (!$queryResult) {
             return NULL;
@@ -48,13 +43,14 @@ class EntityManager
      */
     private function setProperties($queryResult)
     {
-        $arrObjVars = get_object_vars($this->entity);
+        $arrClassMethods = get_class_methods(User::class);
 
-        $arrExistingProperties= array_intersect_key($queryResult[0], $arrObjVars);
-
-        foreach ($arrExistingProperties as $key => $value) {
-            if ($value !== NULL) {
-                $this->entity->$key = $value;
+        foreach ($queryResult[0] as $key => $value) {
+            $key = ucfirst($key);
+            foreach ($arrClassMethods as $methodName) {
+                if ($methodName == 'set' . $key && $value !== NULL) {
+                    $this->entity->$methodName($value);
+                }
             }
         }
 
