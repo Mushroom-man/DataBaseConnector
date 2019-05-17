@@ -20,9 +20,9 @@ class EntityManager
      */
     public function __construct($className)
     {
-      $this->dbConnect = new DataBaseManager();
+        $this->dbConnect = new DataBaseManager();
 
-      $this->entity = new $className;
+        $this->entity = new $className;
     }
 
     /**
@@ -31,9 +31,9 @@ class EntityManager
      */
     public function setEntityName($entityName)
     {
-      $this->entity->entityName = $entityName;
+        $this->entity->entityName = $entityName;
 
-      return $this;
+        return $this;
     }
 
     /**
@@ -42,16 +42,16 @@ class EntityManager
      */
     public function findById($desiredId)
     {
-            $this->desiredId = $desiredId;
+        $this->desiredId = $desiredId;
 
-            $queryResult = $this->dbConnect->select('*')->from($this->entity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        $queryResult = $this->dbConnect->select('*')->from($this->entity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
             if (!$queryResult) {
 
                 return NULL;
             } else {
                 $this->setProperties($queryResult);
-        }
+            }
 
         return $this;
     }
