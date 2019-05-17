@@ -7,7 +7,7 @@ class EntityManager
 {
     private $dbConnect;
 
-    private $oneEntity;
+    private $entityObj;
 
     private $desiredId;
 
@@ -15,44 +15,45 @@ class EntityManager
     {
       $this->dbConnect = new DataBaseManager();
 
-      $this->oneEntity = new $className;
+      $this->entityObj = new $className;
     }
 
     public function setEntityName($entityName)
     {
-      $this->oneEntity->entityName = $entityName;
+      $this->entityObj->entityName = $entityName;
 
       return $this;
     }
 
     public function findById($desiredId)
     {
-        $this->desiredId = $desiredId;
+        try {
+            throw new Exception("Does not exist in the database");
+        } catch(Exception $e) {
 
-        $queryResult = $this->dbConnect->select('*')->from($this->oneEntity->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+            $this->desiredId = $desiredId;
 
-        if ($queryResult == []) {
-            try {
-                throw new Exception("Does not exist in the database");
-            } catch(Exception $e) {
+            $queryResult = $this->dbConnect->select('*')->from($this->entityObj->table)->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+
+            if ($queryResult == []) {
                 echo $e->getMessage();
+            } else {
+                $this->setProperties($queryResult);
             }
-        } else {
-            $this->setProperties($queryResult);
         }
 
         return $this;
     }
 
-    public function setProperties($queryResult)
+    private function setProperties($queryResult)
     {
-        $arrObjVars = get_object_vars($this->oneEntity);
+        $arrObjVars = get_object_vars($this->entityObj);
 
         $arrExistingProperties= array_intersect_key($queryResult[0], $arrObjVars);
 
         foreach ($arrExistingProperties as $key => $value) {
             if ($value !== NULL) {
-                $this->oneEntity->$key = $value;
+                $this->entityObj->$key = $value;
             }
         }
         $this->dbConnect = new DataBaseManager();
