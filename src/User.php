@@ -4,32 +4,13 @@
 class User
 {
     /** @var string */
-    public $entityName;
-
-    /** @var string */
-    public $table = 'user';
+    private $table = 'user';
 
     /** @var integer */
-    public $id;
+    private $id;
 
     /** @var string */
-    public $name;
-
-    /**
-     * @return mixed
-     */
-    public function getEntityName()
-    {
-        return $this->entityName;
-    }
-
-    /**
-     * @param mixed $entityName
-     */
-    public function setEntityName($entityName)
-    {
-        $this->entityName = $entityName;
-    }
+    private $name;
 
     /**
      * @return string
@@ -48,7 +29,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getId()
     {
@@ -56,7 +37,7 @@ class User
     }
 
     /**
-     * @param mixed $id
+     * @param integer $id
      */
     public function setId($id)
     {
@@ -64,7 +45,7 @@ class User
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -72,7 +53,7 @@ class User
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
     public function setName($name)
     {
