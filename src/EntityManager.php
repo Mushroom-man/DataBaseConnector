@@ -11,15 +11,11 @@ class EntityManager
 
     private $desiredId;
 
-    private $arrObjVars;
-
     public function __construct($className)
     {
       $this->dbConnect = new DataBaseManager();
 
       $this->oneEntity = new $className;
-
-      $this->getProperties();
     }
 
     public function setEntityName($entityName)
@@ -48,20 +44,16 @@ class EntityManager
         return $this;
     }
 
-    public function getProperties()
-    {
-        $this->arrObjVars = get_object_vars($this->oneEntity);
-
-        return $this;
-    }
-
     public function setProperties($queryResult)
     {
-        if (array_key_exists("id", $this->arrObjVars)) {
-            $this->oneEntity->id = $queryResult[0]["id"];
-        }
-        if (array_key_exists("name", $this->arrObjVars) && $queryResult[0]["name"] !== NULL) {
-            $this->oneEntity->name = $queryResult[0]["name"];
+        $arrObjVars = get_object_vars($this->oneEntity);
+
+        $arrExistingProperties= array_intersect_key($queryResult[0], $arrObjVars);
+
+        foreach ($arrExistingProperties as $key => $value) {
+            if ($value !== NULL) {
+                $this->oneEntity->$key = $value;
+            }
         }
         $this->dbConnect = new DataBaseManager();
 
