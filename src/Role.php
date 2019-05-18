@@ -1,17 +1,17 @@
 <?php
 require_once 'BaseEntity.php';
 
-class User extends BaseEntity
+class Role extends BaseEntity
 {
     /** @var string */
     private $name;
 
     /**
-     * User constructor.
+     * Role constructor.
      */
     public function __construct()
     {
-        $this->table = 'user';
+        $this->table = 'role';
     }
 
     /**
