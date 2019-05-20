@@ -13,7 +13,8 @@ class EntityManager
     /** @var object */
     private $entity;
 
-    private $newId;
+    /** @var array*/
+    private $checkSelect;
 
     /**
      * EntityManager constructor.
@@ -23,7 +24,7 @@ class EntityManager
     {
         $this->dbConnect = new DataBaseManager();
 
-        $this->entity = new $className;
+        $this->entity = $className;
     }
 
     /**
@@ -32,33 +33,12 @@ class EntityManager
      */
     public function findById($desiredId)
     {
-        $this->newId = $desiredId;
         $queryResult = $this->dbConnect->select('*')->from($this->entity->getTable())->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        $this->checkSelect = $queryResult;
 
         if (!$queryResult) {
-            $this->dbConnect = new DataBaseManager();
 
             return NULL;
-        }
-
-        return $this->setProperties($queryResult);
-    }
-
-    /**
-     * @param array $queryResult
-     * @return object
-     */
-    private function setProperties($queryResult)
-    {
-        $arrClassMethods = get_class_methods(get_class($this->entity));
-
-        foreach ($queryResult[0] as $key => $value) {
-            $key = ucfirst($key);
-            foreach ($arrClassMethods as $methodName) {
-                if ($methodName == 'set' . $key && $value !== NULL) {
-                    $this->entity->$methodName($value);
-                }
-            }
         }
 
         return $this->entity;
@@ -79,7 +59,7 @@ class EntityManager
 
         $query = $this->dbConnect;
 
-        if ($entity->getId() !== NULL) {
+        if ($entity->getId()) {
 
             $query->update($entity->getTable());
 
@@ -91,22 +71,30 @@ class EntityManager
                     $query->set($column . ' = ' . "'" . $entity->$value() . "'");
                 }
             }
-            $query->limit(1)->getQuery()->prepare()->execute();
+            $query->getQuery()->prepare()->execute();
         } else {
-            $entity->setId($this->newId);
             foreach ($arrClassMethods as $value) {
                 $what = substr($value, 0, 3);
                 if ($what == 'get' && $value !== 'getTable') {
                     $column = substr($value, 3);
                     $column = lcfirst($column);
-                    $columnList[] = $column;
-                    $insertValues[] = $entity->$value();
+                    if($entity->$value()) {
+                        $columnList[] = $column;
+                        $insertValues[] = $entity->$value();
+                    }
                 }
             }
-            $query->insert($entity->getTable(), implode(', ', $columnList))->values(implode(', ', $insertValues));
+            $this->dbConnect = new DataBaseManager();
+
+            $query = $this->dbConnect;
+
+            $insertData = implode(" ', ' ", $insertValues);
+
+            $query->insert($entity->getTable(), implode(', ', $columnList))->values("'" . $insertData . "'");
+
             $query->getQuery()->prepare()->execute();
         }
 
-        return $this;//->entity;
+        return $this->entity;
     }
 }
