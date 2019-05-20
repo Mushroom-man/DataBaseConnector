@@ -13,6 +13,8 @@ class EntityManager
     /** @var object */
     private $entity;
 
+    private $newId;
+
     /**
      * EntityManager constructor.
      * @param string $className
@@ -30,6 +32,7 @@ class EntityManager
      */
     public function findById($desiredId)
     {
+        $this->newId = $desiredId;
         $queryResult = $this->dbConnect->select('*')->from($this->entity->getTable())->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
 
         if (!$queryResult) {
@@ -85,17 +88,25 @@ class EntityManager
                 if ($what == 'get' && $value !== 'getTable') {
                     $column = substr($value, 3);
                     $column = lcfirst($column);
-                    $columnList[]= $column;
-                    $insertValues[] = $entity->$value();
                     $query->set($column . ' = ' . "'" . $entity->$value() . "'");
                 }
             }
             $query->limit(1)->getQuery()->prepare()->execute();
         } else {
-          $query->insert($entity->getTable(), implode(', ', $columnList))->values(implode(', ', $insertValues));
-          $query->getQuery()->prepare()->execute();
+            $entity->setId($this->newId);
+            foreach ($arrClassMethods as $value) {
+                $what = substr($value, 0, 3);
+                if ($what == 'get' && $value !== 'getTable') {
+                    $column = substr($value, 3);
+                    $column = lcfirst($column);
+                    $columnList[] = $column;
+                    $insertValues[] = $entity->$value();
+                }
+            }
+            $query->insert($entity->getTable(), implode(', ', $columnList))->values(implode(', ', $insertValues));
+            $query->getQuery()->prepare()->execute();
         }
 
-        return $this->entity;
+        return $this;//->entity;
     }
 }
