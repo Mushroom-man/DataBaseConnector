@@ -11,10 +11,9 @@ class EntityManager
     private $entity;
 
     /**
-     * EntityManager constructor.
      * @param string $className
      */
-    public function __construct($className)
+    public function setEntityName($className)
     {
         $this->entity = new $className();
     }
@@ -87,15 +86,15 @@ class EntityManager
      */
     private function update($entityFieldList, $entityFieldValues, $entity)
     {
-        $DataBaseManager = new DataBaseManager();
-        $DataBaseManager->update($entity->getTable());
+        $dataBaseManager = new DataBaseManager();
+        $dataBaseManager->update($entity->getTable());
 
         $countedEntityFields = count($entityFieldList);
         for ($i = 0; $i < $countedEntityFields; ++$i) {
-            $DataBaseManager->set($entityFieldList[$i] . ' = ' . "'" . $entityFieldValues[$entityFieldList[$i]] . "'");
+            $dataBaseManager->set($entityFieldList[$i] . ' = ' . "'" . $entityFieldValues[$entityFieldList[$i]] . "'");
         }
 
-        $DataBaseManager->where('id = ' . $entity->getId())->limit(1)->getQuery()->prepare()->execute();
+        $dataBaseManager->where('id = ' . $entity->getId())->limit(1)->getQuery()->prepare()->execute();
 
         return $entity;
     }
@@ -110,21 +109,16 @@ class EntityManager
     {
         $id = array_search('id', $entityFieldList);
         unset($entityFieldList[$id]);
-        unset($entityFieldValues["id"]);
         $insertColumns = implode(', ', $entityFieldList);
+        unset($entityFieldValues["id"]);
+        $entityFieldValues = implode("', '", $entityFieldValues);
 
-        foreach ($entityFieldValues as $field => $value) {
-            if($value == NULL){
-                $entityFieldValues[$field] = "NULL";
-            }
-        }
+        $dataBaseManager = new DataBaseManager();
+        $dataBaseManager->insert($entity->getTable(), $insertColumns);
+        $dataBaseManager->values("'" . $entityFieldValues . "'");
+        $dataBaseManager->getQuery()->prepare()->execute();
 
-        $DataBaseManager = new DataBaseManager();
-        $DataBaseManager->insert($entity->getTable(), $insertColumns);
-        $DataBaseManager->values(implode(', ', $entityFieldValues));
-        $DataBaseManager->getQuery()->prepare()->execute();
-
-        $insertedId = $DataBaseManager->lastInsertId()->prepare()->execute();
+        $insertedId = $dataBaseManager->lastInsertId()->prepare()->execute();
         $entity->setId($insertedId[0]["LAST_INSERT_ID()"]);
 
         return $entity;
