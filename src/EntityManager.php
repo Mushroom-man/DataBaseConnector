@@ -26,83 +26,99 @@ class EntityManager
     public function findById($desiredId)
     {
         $connectForSelect = new DataBaseManager();
-        $findResult = $connectForSelect->select('*')->from($this->entity->getTable())->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
-        if (!$findResult) {
+        $data = $connectForSelect->select('*')->from($this->entity->getTable())->where('id = ' . $desiredId)->getQuery()->prepare()->execute();
+        if (!$data) {
             return NULL;
         }
-        return $this->setProperties($findResult);
+        return $this->setProperties($data);
     }
 
     /**
-     * @param $findResult
+     * @param $data
      * @return object
      */
-    private function setProperties($findResult)
+    private function setProperties($data)
     {
-        $arrClassMethods = get_class_methods(get_class($this->entity));
-        foreach ($findResult[0] as $key => $value) {
+        $classMethods = get_class_methods(get_class($this->entity));
+        foreach ($data[0] as $key => $value) {
             $key = ucfirst($key);
-            foreach ($arrClassMethods as $methodName) {
+            foreach ($classMethods as $methodName) {
                 if ($methodName == 'set' . $key && $value !== NULL) {
                     $this->entity->$methodName($value);
                 }
             }
         }
+
         return $this->entity;
     }
 
     /**
      * @return object
      */
-    public function save()
+    public function save($entity)
     {
-        $entity = $this->entity;
+        $this->entity = $entity;
 
-        $arrClassMethods = get_class_methods(get_class($this->entity));
+        $classMethods = get_class_methods(get_class($this->entity));
 
         $entityFieldList = [];
 
         $entityFieldValues = [];
 
-        $saveRequest = new DataBaseManager();
-        foreach ($arrClassMethods as $methodName) {
+        foreach ($classMethods as $methodName) {
             $methodType = substr($methodName, 0, 3);
             if ($methodType == 'get' && $methodName !== 'getTable') {
                 $fieldName = substr($methodName, 3);
                 $fieldName = lcfirst($fieldName);
-                $entityFieldList[]= $fieldName;
+                $entityFieldList[] = $fieldName;
                 $entityFieldValues[$fieldName] = $entity->$methodName();
             }
         }
 
         if ($entity->getId()) {
-            $saveRequest->update($entity->getTable());
-            $countedEntityFields = count($entityFieldList);
-            for ($i = 0; $i < $countedEntityFields; ++$i) {
-                $saveRequest->set($entityFieldList[$i] . ' = ' . "'" . $entityFieldValues[$entityFieldList[$i]] . "'");
-            }
-            $saveRequest->where('id = ' . $entity->getId())->limit(1)->getQuery()->prepare()->execute();
+
+            return $this->update($entityFieldList, $entityFieldValues, $entity);
         } else {
-            $id = array_search('id', $entityFieldList);
-            unset($entityFieldList[$id]);
-            $insertColumns = implode(', ', $entityFieldList);
-            $saveRequest->insert($entity->getTable(), $insertColumns);
-            unset($entityFieldValues["id"]);
-            foreach ($entityFieldValues as $field => $value) {
-                if($value == NULL){
-                    $entityFieldValues[$field] = "NULL";
-                }
+
+        return $this->insert($entityFieldList, $entityFieldValues, $entity);
+        }
+    }
+
+    private function update($entityFieldList, $entityFieldValues, $entity)
+    {
+        $saveRequest = new DataBaseManager();
+        $saveRequest->update($entity->getTable());
+        $countedEntityFields = count($entityFieldList);
+        for ($i = 0; $i < $countedEntityFields; ++$i) {
+            $saveRequest->set($entityFieldList[$i] . ' = ' . "'" . $entityFieldValues[$entityFieldList[$i]] . "'");
+        }
+        $saveRequest->where('id = ' . $entity->getId())->limit(1)->getQuery()->prepare()->execute();
+
+        return $entity;
+    }
+
+    private function insert($entityFieldList, $entityFieldValues, $entity)
+    {
+        $saveRequest = new DataBaseManager();
+        $id = array_search('id', $entityFieldList);
+        unset($entityFieldList[$id]);
+        $insertColumns = implode(', ', $entityFieldList);
+        $saveRequest->insert($entity->getTable(), $insertColumns);
+        unset($entityFieldValues["id"]);
+        foreach ($entityFieldValues as $field => $value) {
+            if($value == NULL){
+                $entityFieldValues[$field] = "NULL";
             }
-
-            $saveRequest->values(implode(', ', $entityFieldValues));
-
-            $saveRequest->getQuery()->prepare()->execute();
-
-            $insertedId = $saveRequest->lastInsertId()->prepare()->execute();
-
-            $entity->setId($insertedId[0]["LAST_INSERT_ID()"]);
         }
 
-        return $this;
+        $saveRequest->values(implode(', ', $entityFieldValues));
+
+        $saveRequest->getQuery()->prepare()->execute();
+
+        $insertedId = $saveRequest->lastInsertId()->prepare()->execute();
+
+        $entity->setId($insertedId[0]["LAST_INSERT_ID()"]);
+
+        return $entity;
     }
 }
