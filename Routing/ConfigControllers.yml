@@ -1,15 +1,17 @@
-1Route:
-   path: %databaseconnector/fuck/\d%i
+get_user:
+   path: %api/user/\d%i
    method: GET
    controller: UserController
-   contrMethod: getUser
-2Route:
-   path: %databaseconnector/2bla/\d%i
+   controllerMethod: getUser
+
+get_role:
+   path: %api/role/\d%i
    method: GET
-   controller: 2UserController
-   contrMethod: getUser
-3Route:
-   path: %databaseconnector/bla/\d%i
+   controller: RoleController
+   controllerMethod: getRole
+
+get_random:
+   path: %api/wtf/\d%i
    method: GET
-   controller: 3UserController
-   contrMethod: getUser
+   controller: OneMoreController
+   controllerMethod: getRand
