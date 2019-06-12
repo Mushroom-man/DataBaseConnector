@@ -5,8 +5,6 @@ class Router
 {
     public $url;
 
-    public $requestData;
-
     public $parsedConfig = [];
 
     public $configName;
@@ -18,10 +16,8 @@ class Router
 
     public function handleRequest($incomingRequest)
     {
-        $this->requestData = $incomingRequest;
         $incomingRequest = array_flip($incomingRequest);
         $this->url = array_pop($incomingRequest);
-        $urlElements = explode('/', $this->url);
         $requestProcessingOptions = [];
 
         foreach ($this->parsedConfig as $configParams) {
@@ -60,6 +56,6 @@ class Router
             }
         }
 
-        return $this;
+        return $this->parsedConfig;
     }
 }
