@@ -11,17 +11,14 @@ class Router
 
     public $configName;
 
-    public function __construct($incomingRequest)
+    public function __construct()
     {
-        $this->requestData = $incomingRequest;
-
         $this->parseControllerConfig();
-
-        $this->handleRequest($incomingRequest);
     }
 
-    private function handleRequest($incomingRequest)
+    public function handleRequest($incomingRequest)
     {
+        $this->requestData = $incomingRequest;
         $incomingRequest = array_flip($incomingRequest);
         $this->url = array_pop($incomingRequest);
         $urlElements = explode('/', $this->url);
