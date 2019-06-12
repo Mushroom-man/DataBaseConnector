@@ -34,6 +34,18 @@ class Router
            }
         }
 
+        if($requestProcessingOptions) {
+            echo "PATH FOUND!<br/>";
+            echo "Status code: ";
+            http_response_code(200);
+            echo http_response_code();
+        } else {
+            echo "PATH NOT FOUND!<br/>";
+            echo "Status code: ";
+            http_response_code(404);
+            echo http_response_code();
+        }
+
         return $requestProcessingOptions;
     }
 
