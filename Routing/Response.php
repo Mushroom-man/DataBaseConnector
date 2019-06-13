@@ -1,34 +1,41 @@
 <?php
 
 
+/**
+ * Class Response
+ */
 class Response
 {
-    public $responseBody;
+    /**
+     * @var string
+     */
+    public $body;
 
-    public $responseStatusCode;
+    /**
+     * @var int
+     */
+    public $statusCode;
 
-    public function __construct($responseMessage, $responseStatusCode)
+    const HTTP_OK = 200;
+
+    const HTTP_NOT_FOUND = 404;
+
+    /**
+     * Response constructor.
+     * @param int $statusCode
+     * @param string $message
+     */
+    public function __construct($statusCode = 200, $message = '')
     {
-        $this->responseBody = $responseMessage;
+        $this->body = $message;
 
-        $this->responseStatusCode = $responseStatusCode;
-    }
-
-    private function setResponseStatusCode()
-    {
-        return  http_response_code($this->responseStatusCode);
-    }
-
-    private function dispalyBody()
-    {
-        echo $this->responseBody . $this->responseStatusCode;
+        $this->statusCode = $statusCode;
     }
 
     public function sendResponse()
     {
-        $this->setResponseStatusCode();
+        http_response_code($this->statusCode);
 
-        $this->dispalyBody();
+        echo $this->body;
     }
-
 }
