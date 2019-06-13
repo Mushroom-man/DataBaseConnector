@@ -1,4 +1,5 @@
 <?php
+require_once 'Response.php';
 
 
 class Router
@@ -28,18 +29,10 @@ class Router
         }
 
         if($requestProcessingOptions) {
-            echo "PATH FOUND!<br/>";
-            echo "Status code: ";
-            http_response_code(200);
-            echo http_response_code();
+            return new Response("PATH FOUND!<br/>" . "Status code: ", 200);
         } else {
-            echo "PATH NOT FOUND!<br/>";
-            echo "Status code: ";
-            http_response_code(404);
-            echo http_response_code();
+            return new Response("PATH NOT FOUND!<br/>" . "Status code: ", 404);
         }
-
-        return $requestProcessingOptions;
     }
 
     private function parseControllerConfig()
