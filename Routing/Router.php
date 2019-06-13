@@ -15,12 +15,14 @@ class Router
     /**
      * @var array
      */
-    public $parsedConfig = [];
+    public $config = [];
 
     /**
      * @var string
      */
     public $configName;
+
+    const HTTP_NOT_FOUND = "PATH NOT FOUND!";
 
     /**
      * Router constructor.
@@ -40,7 +42,7 @@ class Router
         $this->url = array_pop($incomingRequest);
         $requestProcessingOptions = [];
 
-        foreach ($this->parsedConfig as $configParams) {
+        foreach ($this->config as $configParams) {
            if (preg_match($configParams["pattern"], $this->url) == 1) {
                $requestProcessingOptions['controllerName'] = $configParams["controller"];
                $requestProcessingOptions['controllerMethod'] = $configParams["controllerMethod"];
@@ -50,7 +52,7 @@ class Router
         if($requestProcessingOptions) {
             return new Response();
         } else {
-            return new Response( Response::HTTP_NOT_FOUND, "PATH NOT FOUND!");
+            return new Response( Response::HTTP_NOT_FOUND, self::HTTP_NOT_FOUND);
         }
     }
 
@@ -65,12 +67,12 @@ class Router
             $configElement = explode(': ', $value);
             if(count($configElement) == 1) {
                 $this->configName = trim($configElement[0], ":");
-                $this->parsedConfig[$this->configName] = [];
+                $this->config[$this->configName] = [];
             } else {
-                $this->parsedConfig[$this->configName][trim($configElement[0])] = trim($configElement[1]);
+                $this->config[$this->configName][trim($configElement[0])] = trim($configElement[1]);
             }
         }
 
-        return $this->parsedConfig;
+        return $this->config;
     }
 }

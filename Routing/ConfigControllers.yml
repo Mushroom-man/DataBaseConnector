@@ -1,17 +1,17 @@
 get_user:
-   path: %api/user/\d%i
+   pattern: %api/user/\d%i
    method: GET
    controller: UserController
    controllerMethod: getUser
 
 get_role:
-   path: %api/role/\d%i
+   pattern: %api/role/\d%i
    method: GET
    controller: RoleController
    controllerMethod: getRole
 
 get_random:
-   path: %api/wtf/\d%i
+   pattern: %api/wtf/\d%i
    method: GET
    controller: OneMoreController
    controllerMethod: getRand
