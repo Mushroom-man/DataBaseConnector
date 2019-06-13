@@ -1,0 +1,17 @@
+get_user:
+   pattern: %api/user/\d%i
+   method: GET
+   controller: UserController
+   controllerMethod: getUser
+
+get_role:
+   pattern: %api/role/\d%i
+   method: GET
+   controller: RoleController
+   controllerMethod: getRole
+
+get_random:
+   pattern: %api/wtf/\d%i
+   method: GET
+   controller: OneMoreController
+   controllerMethod: getRand
