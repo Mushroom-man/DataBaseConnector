@@ -1,5 +1,5 @@
 <?php
-
+namespace ApiBundle\Entity;
 
 class BaseEntity
 {

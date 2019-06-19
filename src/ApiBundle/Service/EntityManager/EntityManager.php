@@ -1,9 +1,8 @@
 <?php
-require_once 'DataBaseManager.php';
 
-require_once 'User.php';
+namespace ApiBundle\Service\EntityManager;
 
-require_once 'Role.php';
+use ApiBundle\Service\DataBaseManager;
 
 class EntityManager
 {

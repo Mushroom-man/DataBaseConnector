@@ -1,5 +1,11 @@
 <?php
-require_once 'ConfigParser.php';
+
+namespace ApiBundle\Service;
+
+use PDO;
+
+use ApiBundle\ConfigParser;
+
 
 class DataBaseManager
 {
@@ -33,6 +39,9 @@ class DataBaseManager
     /** @var array */
     private $updatedFields;
 
+    /** @var integer*/
+    private $quantityRecord;
+
     const SELECT_TYPE = 0;
 
     const INSERT_TYPE = 1;
@@ -49,8 +58,7 @@ class DataBaseManager
      */
     public function __construct()
     {
-        $className = 'ConfigParser';
-        $className::parseData();
+        ConfigParser::parseData();
         $dsn = "mysql:host=" . ConfigParser::$parsedData["db_host"] . ";dbname=" . ConfigParser::$parsedData["db_name"] . ";charset=" . ConfigParser::$parsedData["charset"];
         $user = ConfigParser::$parsedData["db_user"];
         $pass = ConfigParser::$parsedData["db_password"];
@@ -60,6 +68,14 @@ class DataBaseManager
     public function getConnection()
     {
         $this->connection;
+    }
+
+    public function lastInsertId()
+    {
+        $this->stmt = 'SELECT LAST_INSERT_ID()';
+
+        return $this;
+
     }
 
     /**
@@ -72,9 +88,9 @@ class DataBaseManager
         $this->requestType = self::SELECT_TYPE;
 
         if($alias) {
-            $this->fields[] = $fields . ' AS ' . $alias;
+            $this->fields = $fields . ' AS ' . $alias;
         } else {
-            $this->fields[] = $fields;
+            $this->fields = $fields;
         }
 
         return $this;
@@ -88,9 +104,9 @@ class DataBaseManager
     public function from($table, $alias = NULL)
     {
         if ($alias) {
-            $this->table[] = $table . ' ' . $alias;
+            $this->table = $table . ' ' . $alias;
         } else {
-            $this->table[] = $table;
+            $this->table = $table;
         }
 
         return $this;
@@ -128,7 +144,7 @@ class DataBaseManager
     {
         $this->requestType = self::INSERT_TYPE;
 
-        $this->table .= $table;
+        $this->table = $table;
 
         if ($fields) {
                 $this->fields .= ' ' . '(' . $fields . ')';
@@ -156,7 +172,7 @@ class DataBaseManager
     {
         $this->requestType = self::UPDATE_TYPE;
 
-        $this->table .= $table;
+        $this->table = $table;
 
         return $this;
     }
@@ -196,6 +212,14 @@ class DataBaseManager
         return $this;
     }
 
+    public function limit($quantityRecord)
+    {
+        $this->quantityRecord = $quantityRecord;
+
+        return $this;
+
+    }
+
     /**
      * @return object $this
      */
@@ -224,7 +248,7 @@ class DataBaseManager
      */
     public function generateSelectQuery()
     {
-        $this->stmt = 'SELECT ' . implode(', ', $this->fields) . ' FROM ' . implode(', ', $this->table);
+        $this->stmt = 'SELECT ' . $this->fields . ' FROM ' . $this->table;
 
         if($this->joinTable){
             $this->stmt .= ' INNER JOIN ' . $this->joinTable . ' ON ' . $this->compareField;
@@ -235,6 +259,9 @@ class DataBaseManager
         if($this->orderBy){
             $this->stmt .= ' ORDER BY ' . implode(', ', $this->orderBy);
         }
+        if($this->quantityRecord){
+            $this->stmt .= ' LIMIT ' . $this->quantityRecord;
+        }
 
         return $this;
     }
@@ -244,7 +271,11 @@ class DataBaseManager
      */
     public function generateInsertQuery()
     {
-        $this->stmt = 'INSERT INTO ' . $this->table . $this->fields . ' VALUES ' . $this->insertValues;
+        $this->stmt = 'INSERT INTO ' . $this->table;
+        if($this->fields) {
+            $this->stmt .= $this->fields;
+        }
+        $this->stmt .= ' VALUES ' . $this->insertValues;
 
         return $this;
     }
@@ -258,6 +289,9 @@ class DataBaseManager
 
         if($this->where) {
             $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+        if($this->quantityRecord) {
+            $this->stmt .= ' LIMIT ' . $this->quantityRecord;
         }
 
         return $this;

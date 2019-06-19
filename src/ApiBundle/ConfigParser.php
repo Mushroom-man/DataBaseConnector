@@ -1,10 +1,10 @@
 <?php
 
+namespace ApiBundle;
+
 class ConfigParser
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     public static $parsedData;
 
     /**
@@ -12,7 +12,7 @@ class ConfigParser
      */
     public static function parseData()
     {
-        $parsConfig = file('/var/www/html/DataBaseConnector/src/configDB', FILE_IGNORE_NEW_LINES);
+        $parsConfig = file('/var/www/html/PabloFramework/config/configDB', FILE_IGNORE_NEW_LINES);
 
         foreach ($parsConfig as $key => $value) {
             $parsElement = explode(': ', $value);

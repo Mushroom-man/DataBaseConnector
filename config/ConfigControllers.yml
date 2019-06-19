@@ -3,15 +3,18 @@ get_user:
    method: GET
    controller: UserController
    controllerMethod: getUser
+   controllerNameSpace: ApiBundle\Controller\
 
 get_role:
    pattern: %api/role/\d%i
    method: GET
    controller: RoleController
    controllerMethod: getRole
+   controllerNameSpace: Bla\
 
 get_random:
    pattern: %api/wtf/\d%i
    method: GET
    controller: OneMoreController
    controllerMethod: getRand
+   controllerNameSpace: Bla\

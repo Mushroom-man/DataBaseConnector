@@ -1,5 +1,5 @@
 <?php
-require_once 'BaseEntity.php';
+namespace ApiBundle\Entity;
 
 class Role extends BaseEntity
 {
