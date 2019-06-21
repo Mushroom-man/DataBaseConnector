@@ -1,5 +1,6 @@
 <?php
-require_once 'Response.php';
+
+namespace ApiBundle\Routing;
 
 
 /**
@@ -34,7 +35,7 @@ class Router
 
     /**
      * @param $incomingRequest
-     * @return object Response
+     * @return Response|mixed
      */
     public function handleRequest($incomingRequest)
     {
@@ -46,11 +47,23 @@ class Router
            if (preg_match($configParams["pattern"], $this->url) == 1) {
                $requestProcessingOptions['controllerName'] = $configParams["controller"];
                $requestProcessingOptions['controllerMethod'] = $configParams["controllerMethod"];
+               $requestProcessingOptions['controllerNameSpace'] = $configParams["controllerNameSpace"];
+               $requestProcessingOptions['countMethodArguments'] = $configParams["countMethodArguments"];
            }
         }
 
         if($requestProcessingOptions) {
-            return new Response();
+            $this->url = explode('/', $this->url);
+            $methodControllerName = $requestProcessingOptions['controllerMethod'];
+            $controllerName = $requestProcessingOptions['controllerNameSpace'] . $requestProcessingOptions['controllerName'];
+            $controller = new $controllerName();
+            $argumentsMethodController = array_slice($this->url, -$requestProcessingOptions['countMethodArguments']);
+            $arrControllerNameMethodName = [$controller, $methodControllerName];
+            $arrArgumentValues = [];
+            foreach ($argumentsMethodController as $valueArgument) {
+                $arrArgumentValues[] = $valueArgument;
+            }
+            return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
         } else {
             return new Response( Response::HTTP_NOT_FOUND, self::HTTP_NOT_FOUND);
         }
@@ -61,7 +74,7 @@ class Router
      */
     private function parseControllerConfig()
     {
-        $parsConfig = file('/var/www/html/DataBaseConnector/Routing/ConfigControllers.yml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $parsConfig = file('/var/www/html/PabloFramework/config/ConfigControllers.yml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($parsConfig as $key => $value) {
             $configElement = explode(': ', $value);

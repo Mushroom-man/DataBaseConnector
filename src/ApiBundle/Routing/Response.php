@@ -1,4 +1,5 @@
 <?php
+namespace ApiBundle\Routing;
 
 
 /**
@@ -28,14 +29,12 @@ class Response
     public function __construct($statusCode = 200, $message = '')
     {
         $this->body = $message;
-
         $this->statusCode = $statusCode;
     }
 
     public function sendResponse()
     {
         http_response_code($this->statusCode);
-
         echo $this->body;
     }
 }

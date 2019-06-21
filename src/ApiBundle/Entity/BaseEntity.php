@@ -1,5 +1,5 @@
 <?php
-
+namespace ApiBundle\Entity;
 
 class BaseEntity
 {
@@ -31,5 +31,21 @@ class BaseEntity
     public function getTable()
     {
         return $this->table;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $properties = [];
+        foreach ((array)$this as $k => $v) {
+            if ($k[0] == "\0") {
+                $k = substr($k, strpos($k, "\0", 1) + 1);
+            }
+            $properties[$k] = $v;
+        }
+
+        return $properties;
     }
 }
