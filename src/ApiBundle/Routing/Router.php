@@ -48,6 +48,7 @@ class Router
                $requestProcessingOptions['controllerName'] = $configParams["controller"];
                $requestProcessingOptions['controllerMethod'] = $configParams["controllerMethod"];
                $requestProcessingOptions['controllerNameSpace'] = $configParams["controllerNameSpace"];
+               $requestProcessingOptions['countMethodArguments'] = $configParams["countMethodArguments"];
            }
         }
 
@@ -56,9 +57,13 @@ class Router
             $methodControllerName = $requestProcessingOptions['controllerMethod'];
             $controllerName = $requestProcessingOptions['controllerNameSpace'] . $requestProcessingOptions['controllerName'];
             $controller = new $controllerName();
-            $controller->$methodControllerName($this->url[2]);
-
-            return new Response();
+            $argumentsMethodController = array_slice($this->url, -$requestProcessingOptions['countMethodArguments']);
+            $arrControllerNameMethodName = [$controller, $methodControllerName];
+            $arrArgumentValues = [];
+            foreach ($argumentsMethodController as $valueArgument) {
+                $arrArgumentValues[] = $valueArgument;
+            }
+            return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
         } else {
             return new Response( Response::HTTP_NOT_FOUND, self::HTTP_NOT_FOUND);
         }

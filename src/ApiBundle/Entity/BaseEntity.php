@@ -32,4 +32,17 @@ class BaseEntity
     {
         return $this->table;
     }
+
+    public function toArray()
+    {
+        $properties = [];
+        foreach ((array)$this as $k => $v) {
+            if ($k[0] == "\0") {
+                $k = substr($k, strpos($k, "\0", 1) + 1);
+            }
+            $properties[$k] = $v;
+        }
+
+        return $properties;
+    }
 }

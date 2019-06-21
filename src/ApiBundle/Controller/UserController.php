@@ -2,8 +2,8 @@
 
 namespace ApiBundle\Controller;
 
+use ApiBundle\Routing\Response;
 use ApiBundle\Service\EntityManager\EntityManager;
-
 use ApiBundle\Entity\User;
 
 /**
@@ -12,18 +12,19 @@ use ApiBundle\Entity\User;
  */
 class UserController
 {
-    /**
-     * @param integer $id
-     * @return object EntityManager
-     */
     public function getUser($id)
     {
         $entityManager = new EntityManager();
 
         $entityManager->setEntityName(User::class);
 
-        $entityManager->findById($id);
+        $user = $entityManager->findById($id);
 
-        return $entityManager;
+        if($user) {
+
+            return new Response(200, json_encode($user->toArray()));
+        }
+
+        return new Response(Response::HTTP_NOT_FOUND);
     }
 }
