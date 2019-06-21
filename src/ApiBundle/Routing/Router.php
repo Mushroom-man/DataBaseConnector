@@ -39,12 +39,13 @@ class Router
      */
     public function handleRequest($incomingRequest)
     {
+        $requestMethodType = $_SERVER['REQUEST_METHOD'];
         $incomingRequest = array_flip($incomingRequest);
         $this->url = array_pop($incomingRequest);
         $requestProcessingOptions = [];
 
         foreach ($this->config as $configParams) {
-           if (preg_match($configParams["pattern"], $this->url) == 1) {
+           if (preg_match($configParams["pattern"], $this->url) == 1 && $configParams["method"] == $requestMethodType) {
                $requestProcessingOptions['controllerName'] = $configParams["controller"];
                $requestProcessingOptions['controllerMethod'] = $configParams["controllerMethod"];
                $requestProcessingOptions['controllerNameSpace'] = $configParams["controllerNameSpace"];
@@ -63,6 +64,7 @@ class Router
             foreach ($argumentsMethodController as $valueArgument) {
                 $arrArgumentValues[] = $valueArgument;
             }
+
             return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
         } else {
             return new Response( Response::HTTP_NOT_FOUND, self::HTTP_NOT_FOUND);
