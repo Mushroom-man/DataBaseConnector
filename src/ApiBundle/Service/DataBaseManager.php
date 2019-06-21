@@ -70,6 +70,9 @@ class DataBaseManager
         $this->connection;
     }
 
+    /**
+     * @return object $this
+     */
     public function lastInsertId()
     {
         $this->stmt = 'SELECT LAST_INSERT_ID()';
@@ -212,12 +215,15 @@ class DataBaseManager
         return $this;
     }
 
+    /**
+     * @param integer $quantityRecord
+     * @return object $this
+     */
     public function limit($quantityRecord)
     {
         $this->quantityRecord = $quantityRecord;
 
         return $this;
-
     }
 
     /**

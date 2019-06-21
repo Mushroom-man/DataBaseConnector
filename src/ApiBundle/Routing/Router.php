@@ -35,7 +35,7 @@ class Router
 
     /**
      * @param $incomingRequest
-     * @return object Response
+     * @return Response|mixed
      */
     public function handleRequest($incomingRequest)
     {

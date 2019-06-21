@@ -33,6 +33,9 @@ class BaseEntity
         return $this->table;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $properties = [];
