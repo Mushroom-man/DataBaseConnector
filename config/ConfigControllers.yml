@@ -6,6 +6,22 @@ get_user:
    controllerNameSpace: ApiBundle\Controller\
    countMethodArguments: 1
 
+create_user:
+   pattern: %api/user/create%i
+   method: POST
+   controller: UserController
+   controllerMethod: createUser
+   controllerNameSpace: ApiBundle\Controller\
+   countMethodArguments: 0
+
+delete_user:
+   pattern: %api/user/\d%i
+   method: DELETE
+   controller: UserController
+   controllerMethod: deleteUser
+   controllerNameSpace: ApiBundle\Controller\
+   countMethodArguments: 1
+
 get_role:
    pattern: %api/role/\d%i
    method: GET

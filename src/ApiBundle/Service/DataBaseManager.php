@@ -78,7 +78,6 @@ class DataBaseManager
         $this->stmt = 'SELECT LAST_INSERT_ID()';
 
         return $this;
-
     }
 
     /**
@@ -311,6 +310,9 @@ class DataBaseManager
         $this->stmt = 'DELETE FROM ' . $this->table;
         if($this->where) {
             $this->stmt .= ' WHERE ' . implode(' AND ', $this->where);
+        }
+        if($this->quantityRecord) {
+            $this->stmt .= ' LIMIT ' . $this->quantityRecord;
         }
 
         return $this;
