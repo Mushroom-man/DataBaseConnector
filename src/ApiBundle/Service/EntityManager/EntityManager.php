@@ -46,7 +46,6 @@ class EntityManager
                 }
             }
         }
-
         return $this->entity;
     }
 
@@ -73,7 +72,6 @@ class EntityManager
         if ($entity->getId()) {
             return $this->update($entityFieldList, $entityFieldValues, $entity);
         }
-
         return $this->insert($entityFieldList, $entityFieldValues, $entity);
     }
 

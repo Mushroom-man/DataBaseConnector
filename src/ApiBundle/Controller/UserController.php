@@ -25,7 +25,6 @@ class UserController
         if($user) {
             return new Response(200, json_encode($user->toArray()));
         }
-
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
 
@@ -44,7 +43,54 @@ class UserController
 
             return new Response(204);
         }
+        return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
+    }
 
+    /**
+     * @return object Response
+     */
+    public function createUser()
+    {
+        $newUser = new User();
+        $classMethods = get_class_methods(get_class($newUser));
+        foreach ($_POST as $field => $value) {
+            foreach ($classMethods as $methodName) {
+                if ($methodName == 'set' . ucfirst($field)) {
+                    $newUser->$methodName($value);
+                }
+            }
+        }
+        $entityManager = new EntityManager();
+        $entityManager->setEntityName(User::class);
+        $user = $entityManager->save($newUser);
+
+        return new Response(200, json_encode($user->toArray()));
+    }
+
+    /**
+     * @param integer $id
+     * @return object Response
+     */
+    public function updateUser($id)
+    {
+        $newUser = new User();
+        $newUser->setId($id);
+        $classMethods = get_class_methods(get_class($newUser));
+        foreach ($_POST as $field => $value) {
+            foreach ($classMethods as $methodName) {
+                if ($methodName == 'set' . ucfirst($field)) {
+                    $newUser->$methodName($value);
+                }
+            }
+        }
+        $entityManager = new EntityManager();
+        $entityManager->setEntityName(User::class);
+        $desiredUser = $entityManager->findById($id);
+        if($desiredUser) {
+            $user = $entityManager->save($newUser);
+
+            return new Response(200, json_encode($user->toArray()));
+        }
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
 }

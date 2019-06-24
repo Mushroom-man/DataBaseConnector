@@ -45,7 +45,6 @@ class BaseEntity
             }
             $properties[$k] = $v;
         }
-
         return $properties;
     }
 }
