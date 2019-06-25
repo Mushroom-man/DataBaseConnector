@@ -23,7 +23,7 @@ class UserController
         $entityManager->setEntityName(User::class);
         $user = $entityManager->findById($id);
         if($user) {
-            return new Response(200, json_encode($user->toArray()));
+            return new Response(Response::HTTP_OK, json_encode($user->toArray()));
         }
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
@@ -49,11 +49,11 @@ class UserController
     /**
      * @return object Response
      */
-    public function createUser()
+    public function createUser($incomingParams)
     {
         $newUser = new User();
         $classMethods = get_class_methods(get_class($newUser));
-        foreach ($_POST as $field => $value) {
+        foreach ($incomingParams as $field => $value) {
             foreach ($classMethods as $methodName) {
                 if ($methodName == 'set' . ucfirst($field)) {
                     $newUser->$methodName($value);
@@ -64,32 +64,31 @@ class UserController
         $entityManager->setEntityName(User::class);
         $user = $entityManager->save($newUser);
 
-        return new Response(200, json_encode($user->toArray()));
+        return new Response(201, json_encode($user->toArray()));
     }
 
     /**
      * @param integer $id
+     * @param array $fieldValues
      * @return object Response
      */
-    public function updateUser($id)
+    public function updateUser($id, $fieldValues)
     {
-        $newUser = new User();
-        $newUser->setId($id);
-        $classMethods = get_class_methods(get_class($newUser));
-        foreach ($_POST as $field => $value) {
-            foreach ($classMethods as $methodName) {
-                if ($methodName == 'set' . ucfirst($field)) {
-                    $newUser->$methodName($value);
-                }
-            }
-        }
         $entityManager = new EntityManager();
         $entityManager->setEntityName(User::class);
         $desiredUser = $entityManager->findById($id);
+        $classMethods = get_class_methods(get_class($desiredUser));
+        foreach ($fieldValues as $field => $value) {
+            foreach ($classMethods as $methodName) {
+                if ($methodName == 'set' . ucfirst($field)) {
+                    $desiredUser->$methodName($value);
+                }
+            }
+        }
         if($desiredUser) {
-            $user = $entityManager->save($newUser);
+            $updatedUser = $entityManager->save($desiredUser);
 
-            return new Response(200, json_encode($user->toArray()));
+            return new Response(Response::HTTP_OK, json_encode($updatedUser->toArray()));
         }
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }

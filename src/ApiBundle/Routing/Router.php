@@ -42,6 +42,7 @@ class Router
         $requestMethodType = $_SERVER['REQUEST_METHOD'];
         $incomingRequest = array_flip($incomingRequest);
         $this->url = array_shift($incomingRequest);
+        $incomingRequest = array_flip($incomingRequest);
         $requestProcessingOptions = [];
 
         foreach ($this->config as $configParams) {
@@ -58,16 +59,18 @@ class Router
             $methodControllerName = $requestProcessingOptions['controllerMethod'];
             $controllerName = $requestProcessingOptions['controllerNameSpace'] . $requestProcessingOptions['controllerName'];
             $controller = new $controllerName();
+            $arrControllerNameMethodName = [$controller, $methodControllerName];
+            $arrArgumentValues = [];
             if($requestProcessingOptions['countMethodArguments'] > 0) {
                 $argumentsMethodController = array_slice($this->url, -$requestProcessingOptions['countMethodArguments']);
-                $arrControllerNameMethodName = [$controller, $methodControllerName];
-                $arrArgumentValues = [];
                 foreach ($argumentsMethodController as $valueArgument) {
                     $arrArgumentValues[] = $valueArgument;
                 }
-                return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
             }
-            return $controller->$methodControllerName();
+            if($incomingRequest){
+                    $arrArgumentValues[] = $incomingRequest;
+            }
+            return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
         } else {
             return new Response( Response::HTTP_NOT_FOUND, self::HTTP_NOT_FOUND);
         }
