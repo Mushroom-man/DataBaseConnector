@@ -93,12 +93,13 @@ class UserController
     {
         $entityManager = $this->getUserEntityManager();
         $desiredUser = $entityManager->findById($id);
-        $desiredUser = $this->setRequiredFieldValues($fieldValues, $desiredUser);
         if($desiredUser) {
+            $desiredUser = $this->setRequiredFieldValues($fieldValues, $desiredUser);
             $updatedUser = $entityManager->save($desiredUser);
 
             return new Response(Response::HTTP_OK, json_encode($updatedUser->toArray()));
         }
+
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
 }
