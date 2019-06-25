@@ -46,8 +46,16 @@ class EntityManager
                 }
             }
         }
-
         return $this->entity;
+    }
+
+    /**
+     * @param integer $id
+     */
+    public function deleteById($id)
+    {
+        $dataBaseAccess = new DataBaseManager();
+        $dataBaseAccess->delete('user')->where('id =' . $id)->limit(1)->getQuery()->prepare()->execute();
     }
 
     /**
@@ -73,7 +81,6 @@ class EntityManager
         if ($entity->getId()) {
             return $this->update($entityFieldList, $entityFieldValues, $entity);
         }
-
         return $this->insert($entityFieldList, $entityFieldValues, $entity);
     }
 

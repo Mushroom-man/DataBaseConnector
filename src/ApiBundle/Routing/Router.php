@@ -41,7 +41,8 @@ class Router
     {
         $requestMethodType = $_SERVER['REQUEST_METHOD'];
         $incomingRequest = array_flip($incomingRequest);
-        $this->url = array_pop($incomingRequest);
+        $this->url = array_shift($incomingRequest);
+        $incomingRequest = array_flip($incomingRequest);
         $requestProcessingOptions = [];
 
         foreach ($this->config as $configParams) {
@@ -58,11 +59,16 @@ class Router
             $methodControllerName = $requestProcessingOptions['controllerMethod'];
             $controllerName = $requestProcessingOptions['controllerNameSpace'] . $requestProcessingOptions['controllerName'];
             $controller = new $controllerName();
-            $argumentsMethodController = array_slice($this->url, -$requestProcessingOptions['countMethodArguments']);
             $arrControllerNameMethodName = [$controller, $methodControllerName];
             $arrArgumentValues = [];
-            foreach ($argumentsMethodController as $valueArgument) {
-                $arrArgumentValues[] = $valueArgument;
+            if($requestProcessingOptions['countMethodArguments'] > 0) {
+                $argumentsMethodController = array_slice($this->url, -$requestProcessingOptions['countMethodArguments']);
+                foreach ($argumentsMethodController as $valueArgument) {
+                    $arrArgumentValues[] = $valueArgument;
+                }
+            }
+            if($incomingRequest){
+                    $arrArgumentValues[] = $incomingRequest;
             }
 
             return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
@@ -87,7 +93,6 @@ class Router
                 $this->config[$this->configName][trim($configElement[0])] = trim($configElement[1]);
             }
         }
-
         return $this->config;
     }
 }
