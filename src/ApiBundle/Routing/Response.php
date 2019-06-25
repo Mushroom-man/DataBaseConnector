@@ -21,6 +21,10 @@ class Response
 
     const HTTP_NOT_FOUND = 404;
 
+    const CREATED = 201;
+
+    const NO_CONTENT = 204;
+
     /**
      * Response constructor.
      * @param int $statusCode

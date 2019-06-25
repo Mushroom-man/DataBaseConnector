@@ -41,7 +41,7 @@ class UserController
             $dataBaseAccess = new DataBaseManager();
             $dataBaseAccess->delete('user')->where('id =' . $id)->limit(1)->getQuery()->prepare()->execute();
 
-            return new Response(204);
+            return new Response(Response::NO_CONTENT);
         }
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
@@ -64,7 +64,7 @@ class UserController
         $entityManager->setEntityName(User::class);
         $user = $entityManager->save($newUser);
 
-        return new Response(201, json_encode($user->toArray()));
+        return new Response(Response::CREATED, json_encode($user->toArray()));
     }
 
     /**
