@@ -50,6 +50,15 @@ class EntityManager
     }
 
     /**
+     * @param integer $id
+     */
+    public function deleteById($id)
+    {
+        $dataBaseAccess = new DataBaseManager();
+        $dataBaseAccess->delete('user')->where('id =' . $id)->limit(1)->getQuery()->prepare()->execute();
+    }
+
+    /**
      * @param object $entity
      * @return object
      */

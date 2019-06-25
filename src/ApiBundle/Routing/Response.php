@@ -21,9 +21,9 @@ class Response
 
     const HTTP_NOT_FOUND = 404;
 
-    const CREATED = 201;
+    const HTTP_CREATED = 201;
 
-    const NO_CONTENT = 204;
+    const HTTP_NO_CONTENT = 204;
 
     /**
      * Response constructor.

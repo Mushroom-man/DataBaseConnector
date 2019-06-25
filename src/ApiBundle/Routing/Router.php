@@ -70,6 +70,7 @@ class Router
             if($incomingRequest){
                     $arrArgumentValues[] = $incomingRequest;
             }
+
             return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
         } else {
             return new Response( Response::HTTP_NOT_FOUND, self::HTTP_NOT_FOUND);
