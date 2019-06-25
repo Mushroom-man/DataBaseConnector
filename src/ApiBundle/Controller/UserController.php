@@ -2,9 +2,10 @@
 
 namespace ApiBundle\Controller;
 
-use ApiBundle\Routing\Response;
-use ApiBundle\Service\EntityManager\EntityManager;
 use ApiBundle\Entity\User;
+use ApiBundle\Service\EntityManager\EntityManager;
+use ApiBundle\Service\UserManager;
+use ApiBundle\Routing\Response;
 
 /**
  * Class UserController
@@ -13,61 +14,43 @@ use ApiBundle\Entity\User;
 class UserController
 {
     /**
-     * @return object EntityManager
+     * @return object UserManager
      */
-    private function getUserEntityManager()
+    private function getUserManager()
     {
-        $entityManager = new EntityManager();
-        $entityManager->setEntityName(User::class);
-
-        return $entityManager;
-    }
-
-    /**
-     * @param array $fieldValues
-     * @param object $user
-     * @return mixed
-     */
-    private function setRequiredFieldValues($fieldValues, $user)
-    {
-        $classMethods = get_class_methods(get_class($user));
-        foreach ($fieldValues as $field => $value) {
-            foreach ($classMethods as $methodName) {
-                if ($methodName == 'set' . ucfirst($field)) {
-                    $user->$methodName($value);
-                }
-            }
-        }
-        return $user;
+        return new UserManager();
     }
 
     /**
      * @param integer $id
-     * @return array|object Response
+     * @return object Response
      */
     public function getUser($id)
     {
-        $user = $this->getUserEntityManager()->findById($id);
+        /** @var User $user */
+        $user = $this->getUserManager()->getEntityManager()->findById($id);
         if($user) {
             return new Response(Response::HTTP_OK, json_encode($user->toArray()));
         }
+
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
 
-    /**\
+    /**
      * @param integer $id
      * @return object Response
      */
     public function deleteUser($id)
     {
-        $entityManager = $this->getUserEntityManager();
+        /** @var EntityManager $entityManager */
+        $entityManager = $this->getUserManager()->getEntityManager();
         $desiredUser = $entityManager->findById($id);
-
         if($desiredUser) {
             $entityManager->deleteById($id);
 
             return new Response(Response::HTTP_NO_CONTENT);
         }
+
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
     }
 
@@ -77,11 +60,7 @@ class UserController
      */
     public function createUser($fieldValues)
     {
-        $newUser = new User();
-        $newUser = $this->setRequiredFieldValues($fieldValues, $newUser);
-        $newUser = $this->getUserEntityManager()->save($newUser);
-
-        return new Response(Response::HTTP_CREATED, json_encode($newUser->toArray()));
+        return new Response(Response::HTTP_CREATED, json_encode($this->getUserManager()->create($fieldValues)->toArray()));
     }
 
     /**
@@ -91,13 +70,10 @@ class UserController
      */
     public function updateUser($id, $fieldValues)
     {
-        $entityManager = $this->getUserEntityManager();
-        $desiredUser = $entityManager->findById($id);
+        /** @var User $desiredUser */
+        $desiredUser = $this->getUserManager()->update($id, $fieldValues);
         if($desiredUser) {
-            $desiredUser = $this->setRequiredFieldValues($fieldValues, $desiredUser);
-            $updatedUser = $entityManager->save($desiredUser);
-
-            return new Response(Response::HTTP_OK, json_encode($updatedUser->toArray()));
+            return new Response(Response::HTTP_OK, json_encode($desiredUser->toArray()));
         }
 
         return new Response(Response::HTTP_NOT_FOUND, "User is not found!");
