@@ -4,10 +4,10 @@ namespace ApiBundle\Routing;
 
 
 /**
- * Class Request
+ * Class Singleton
  * @package ApiBundle\Routing
  */
-class Request
+class Singleton
 {
     use requestSingleton;
 

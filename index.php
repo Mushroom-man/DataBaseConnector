@@ -13,7 +13,7 @@ function myAutoLoad($className)
 
 spl_autoload_register('myAutoLoad', 'wtf', true);
 
-$request = ApiBundle\Routing\Request::getInstance();
+$request = ApiBundle\Routing\Singleton::getInstance();
 $request->setRequestParams();
 $rout = new ApiBundle\Routing\Router();
 $response = $rout->handleRequest($request);
