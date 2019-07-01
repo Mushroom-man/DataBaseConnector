@@ -34,15 +34,13 @@ class Router
     }
 
     /**
-     * @param $incomingRequest
+     * @param object $incomingRequest
      * @return Response|mixed
      */
     public function handleRequest($incomingRequest)
     {
-        $requestMethodType = $_SERVER['REQUEST_METHOD'];
-        $incomingRequest = array_flip($incomingRequest);
-        $this->url = array_shift($incomingRequest);
-        $incomingRequest = array_flip($incomingRequest);
+        $this->url = $incomingRequest->getRequestUri();
+        $requestMethodType = $incomingRequest->getRequestMethod();
         $requestProcessingOptions = [];
 
         foreach ($this->config as $configParams) {
@@ -56,6 +54,7 @@ class Router
 
         if($requestProcessingOptions) {
             $this->url = explode('/', $this->url);
+            unset($this->url[0]);
             $methodControllerName = $requestProcessingOptions['controllerMethod'];
             $controllerName = $requestProcessingOptions['controllerNameSpace'] . $requestProcessingOptions['controllerName'];
             $controller = new $controllerName();
@@ -67,8 +66,8 @@ class Router
                     $arrArgumentValues[] = $valueArgument;
                 }
             }
-            if($incomingRequest){
-                    $arrArgumentValues[] = $incomingRequest;
+            if($incomingRequest->getPostParams()){
+                    $arrArgumentValues[] = $incomingRequest->getPostParams();
             }
 
             return call_user_func_array($arrControllerNameMethodName, $arrArgumentValues);
@@ -82,7 +81,7 @@ class Router
      */
     private function parseControllerConfig()
     {
-        $parsConfig = file('/var/www/html/PabloFramework/config/ConfigControllers.yml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $parsConfig = file('/var/www/pfr/config/ConfigControllers.yml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($parsConfig as $key => $value) {
             $configElement = explode(': ', $value);

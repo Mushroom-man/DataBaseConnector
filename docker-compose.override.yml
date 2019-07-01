@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  db:
+    ports:
+     - 3307:3306
+  nginx:
+    ports:
+    - 800:80
