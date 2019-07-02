@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+      db:
+        image: mysql:5.7
+        container_name: pfr_db
+        environment:
+           MYSQL_ROOT_PASSWORD: root
+           MYSQL_DATABASE: MyTest
+           MYSQL_USER: root
+        volumes:
+          - ./:/var/www/pfr_db
+
+      php:
+        image: php:7.1-fpm
+        container_name: pfr_php
+        links:
+            - db
+        volumes:
+          - ./:/var/www/pfr
+        build: Docker/php
+
+      nginx:
+        build: Docker/nginx
+        restart: always
+        container_name: nginx
+        links:
+          - php
+        volumes_from:
+          - php
