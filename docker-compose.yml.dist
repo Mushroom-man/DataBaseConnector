@@ -27,4 +27,4 @@ services:
         links:
           - php
         volumes_from:
-          - php
+- php
