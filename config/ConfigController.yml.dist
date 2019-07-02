@@ -44,4 +44,4 @@ get_random:
    controller: OneMoreController
    controllerMethod: getRand
    controllerNameSpace: ApiBundle\Controller\
-   countMethodArguments: 1
+countMethodArguments: 1

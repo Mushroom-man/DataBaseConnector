@@ -1,0 +1,5 @@
+db_host: db
+db_name: MyTest
+db_user: root
+db_password: root
+charset: utf8

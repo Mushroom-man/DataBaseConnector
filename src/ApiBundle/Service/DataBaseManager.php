@@ -120,7 +120,7 @@ class DataBaseManager
      */
     public function where($conditions)
     {
-           $this->andWhere($conditions);
+        $this->andWhere($conditions);
 
         return $this;
     }
