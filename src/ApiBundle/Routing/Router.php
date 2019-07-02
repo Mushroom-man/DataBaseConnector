@@ -81,7 +81,7 @@ class Router
      */
     private function parseControllerConfig()
     {
-        $parsConfig = file('/var/www/pfr/config/ConfigControllers.yml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $parsConfig = file('/var/www/pfr/config/ConfigController.yml', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($parsConfig as $key => $value) {
             $configElement = explode(': ', $value);
